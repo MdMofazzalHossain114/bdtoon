@@ -1,4 +1,4 @@
-import { encryptUsername } from "@/lib/aes-algorithm";
+import { encryptUserId } from "@/lib/aes-algorithm";
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
@@ -17,7 +17,7 @@ export async function GET(request) {
     );
   }
 
-  const eUsername = encryptUsername(username);
+  const eUsername = encryptUserId(username);
   console.log("Username Encrypted - ", eUsername);
 
   return Response.json(

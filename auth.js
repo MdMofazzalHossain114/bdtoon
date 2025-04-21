@@ -5,6 +5,8 @@ import Credentials from "next-auth/providers/credentials";
 import dbConnect from "./lib/dbConnect";
 import UserModel from "./models/user";
 import bcrypt from "bcryptjs";
+import { loginSchema } from "./lib/schema/loginSchema";
+import { z } from "zod";
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
   providers: [
@@ -14,24 +16,35 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       id: "credential",
       name: "credential",
       credentials: {
-        username: { label: "Username", type: "text" },
-        email: { label: "Email", type: "email" },
-        firstname: { label: "Firstname", type: "text" },
-        lastname: { label: "Lastname", type: "text" },
-        password: { label: "Password", type: "text" },
+        identifier: { label: "Email or Username", type: "text" },
+        password: { label: "Password", type: "password" },
       },
 
       async authorize(credentials) {
         await dbConnect();
 
-        console.log("Authorizing using Email or username password");
+        const { identifier, password } = credentials;
+
         try {
+          // Validate using Zod
+          const result = await loginSchema.safeParseAsync({
+            identifier: identifier,
+            password: password,
+          });
+
+          const {
+            identifier: validatedIdentifier,
+            password: validatedPassword,
+          } = result.data;
+
+          //Find user by email or username
           const user = await UserModel.findOne({
             $or: [
-              { email: credentials.identifier },
-              { username: credentials.identifier },
+              { email: validatedIdentifier },
+              { username: validatedIdentifier },
             ],
           });
+          console.log("User - ", user);
 
           if (!user) {
             throw new Error("User not found");
@@ -41,18 +54,24 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             throw new Error("Please verify your account before login");
           }
 
-          const correctPassword = await bcrypt.compare(
-            credentials.password,
+          const isPasswordCorrect = await bcrypt.compare(
+            validatedPassword,
             user.password
           );
 
-          if (correctPassword) {
-            return user;
-          } else {
+          if (!isPasswordCorrect) {
             throw new Error("Incorrect password");
           }
+
+          return user;
         } catch (error) {
-          throw new Error(error);
+          if (error instanceof z.ZodError) {
+            console.error("Validation Error:", error.errors);
+            throw new Error(error.errors[0].message); // Optionally show the first error
+          }
+
+          console.error("Authorize Error:", error);
+          throw new Error(error.message || "Login failed");
         }
       },
     }),

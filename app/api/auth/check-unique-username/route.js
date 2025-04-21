@@ -1,6 +1,10 @@
 import dbConnect from "@/lib/dbConnect";
+import {
+  sendErrorResponse,
+  sendSuccessResponse,
+} from "@/lib/helpers/responseHelpers";
 import UserModel from "@/models/user";
-import { usernameValidation } from "@/schema/singUpSchema";
+import { usernameValidation } from "@/lib/schema/signUpSchema";
 import { z } from "zod";
 
 const usernameQuerySchema = z.object({
@@ -24,13 +28,7 @@ export async function GET(request) {
     if (!result.success) {
       const usernameError = result.error.format().username?._errors || [];
 
-      return Response.json(
-        {
-          success: false,
-          message: "Invalid username",
-        },
-        { status: 400 }
-      );
+      return sendErrorResponse("Invalid username", 400);
     }
 
     const { username } = result.data;
@@ -41,31 +39,12 @@ export async function GET(request) {
     });
 
     if (existingVerifiedUser) {
-      return Response.json(
-        {
-          success: false,
-          message: "Username is already taken",
-        },
-        { status: 400 }
-      );
+      return sendErrorResponse("Username is already taken", 400);
     }
 
-    console.log("success");
-    return Response.json(
-      {
-        success: true,
-        message: "Username available",
-      },
-      { status: 200 }
-    );
+    return sendSuccessResponse("Username available", 200);
   } catch (error) {
     console.log("Checking username error", error);
-    return Response.json(
-      {
-        success: false,
-        message: "Error checking username",
-      },
-      { status: 500 }
-    );
+    return sendErrorResponse("Error checking username", 500);
   }
 }

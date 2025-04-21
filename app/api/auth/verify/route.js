@@ -1,7 +1,12 @@
-import { decryptUsername } from "@/lib/aes-algorithm";
+import { decryptUserId } from "@/lib/aes-algorithm";
 import dbConnect from "@/lib/dbConnect";
+import {
+  sendErrorResponse,
+  sendSuccessResponse,
+} from "@/lib/helpers/responseHelpers";
 import UserModel from "@/models/user";
 import { VerificationCodeModel } from "@/models/verification";
+import mongoose from "mongoose";
 
 export async function POST(request) {
   await dbConnect();
@@ -9,52 +14,40 @@ export async function POST(request) {
   // Example - localhost:3000/verify?q=ENCRYPTED_USERNAME
   const { searchParams } = new URL(request.url);
   const encryptedUsername = searchParams.get("q");
-  const username = decryptUsername(encryptedUsername);
-  console.log("Decrypted username - ", username);
+
+  // username decrypted using AES algorithm
+  const decryptedUserId = decryptUserId(encryptedUsername);
+  console.log("Decrypted username - ", decryptedUserId);
 
   try {
-    const { code, username } = await request.json();
+    // Delete all the verification codes that is expired
+    await VerificationCodeModel.deleteMany({
+      expires: { $lt: new Date() },
+    });
 
-    if (!code || !username) {
-      return Response.json(
-        {
-          success: false,
-          message: "Code and username are required",
-        },
-        { status: 400 }
-      );
+    // Get the verification code and username from the request body
+    const { code, userId } = await request.json();
+
+    if (!code || !userId) {
+      return sendErrorResponse("Missing required fields", 400);
     }
 
-    const user = await UserModel.findOne({ username });
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return sendErrorResponse("Invalid user ID", 400);
+    }
+
+    const user = await UserModel.findById(userId);
 
     if (!user) {
-      return Response.json(
-        {
-          success: false,
-          message: "User not found",
-        },
-        { status: 404 }
-      );
+      return sendErrorResponse("User not found", 404);
     }
 
-    if (user.username !== username) {
-      return Response.json(
-        {
-          success: false,
-          message: "Only owner can verify his account",
-        },
-        { status: 400 }
-      );
+    if (user._id.toString() !== decryptedUserId) {
+      return sendErrorResponse("Only owner can verify his account", 400);
     }
 
     if (user.isVerified) {
-      return Response.json(
-        {
-          success: false,
-          message: "User already verified",
-        },
-        { status: 400 }
-      );
+      return sendErrorResponse("User already verified", 400);
     }
 
     const verificationCode = await VerificationCodeModel.findOne({
@@ -62,35 +55,33 @@ export async function POST(request) {
       code,
     });
 
+    if (!verificationCode) {
+      console.log(verificationCode, code);
+      return sendErrorResponse("Invalid verification code", 400);
+    }
+
     if (verificationCode.expires < new Date()) {
-      return Response.json(
-        {
-          success: false,
-          message: "Verification code expired",
-        },
-        { status: 400 }
-      );
+      return sendErrorResponse("Verification code expired", 400);
+    }
+
+    if (verificationCode.code !== code) {
+      return sendErrorResponse("Verification code is invalid", 400);
     }
 
     user.isVerified = true;
     await user.save();
     await verificationCode.deleteOne();
 
-    return Response.json(
-      {
-        success: true,
-        message: "User verified successfully",
-      },
-      { status: 200 }
-    );
+    // ✅ Delete all other unverified accounts with same username or email
+    await UserModel.deleteMany({
+      _id: { $ne: user._id }, // Not the verified user
+      isVerified: false,
+      $or: [{ email: user.email }, { username: user.username }],
+    });
+
+    return sendSuccessResponse("User verified successfully", 200);
   } catch (error) {
     console.log("Error verifying user", error);
-    return Response.json(
-      {
-        success: false,
-        message: "Error verifying user",
-      },
-      { status: 500 }
-    );
+    return sendErrorResponse("Error verifying user", 500);
   }
 }
