@@ -33,10 +33,10 @@ const userSchema = new Schema(
       type: String,
       default: "",
     },
-    accountType: {
+    role: {
       type: String,
-      enum: ["guest", "seller", "buyer", "admin", "moderator"],
-      default: "guest",
+      enum: ["user", "seller", "buyer", "admin", "moderator"],
+      default: "user",
     },
     isVerified: {
       type: Boolean,
@@ -44,7 +44,7 @@ const userSchema = new Schema(
     },
     status: {
       type: String,
-      enum: ["active", "inactive", "banned"],
+      enum: ["active", "inactive", "banned", "suspended"],
       default: "active",
     },
     bio: {
@@ -57,6 +57,6 @@ const userSchema = new Schema(
   }
 );
 
-const UserModel = mongoose.models.User || mongoose.model("User", userSchema);
+const UserModel = mongoose.models?.User || mongoose.model("User", userSchema);
 
 export default UserModel;

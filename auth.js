@@ -3,7 +3,7 @@ import GitHub from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 import dbConnect from "./lib/dbConnect";
-import UserModel from "./lib/models/User";
+import UserModel from "./models/user";
 import bcrypt from "bcryptjs";
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
@@ -14,7 +14,10 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       id: "credential",
       name: "credential",
       credentials: {
-        username: { label: "Email", type: "text" },
+        username: { label: "Username", type: "text" },
+        email: { label: "Email", type: "email" },
+        firstname: { label: "Firstname", type: "text" },
+        lastname: { label: "Lastname", type: "text" },
         password: { label: "Password", type: "text" },
       },
 

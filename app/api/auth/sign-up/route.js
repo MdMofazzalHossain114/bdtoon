@@ -1,7 +1,8 @@
 import dbConnect from "@/lib/dbConnect";
 import { sendEmail } from "@/lib/email/sendEmail";
 import { VerificationEmail } from "@/lib/email/VerificationEmail";
-import UserModel from "@/lib/models/User";
+import UserModel from "@/models/user";
+import { VerificationCodeModel } from "@/models/verification";
 import bcrypt from "bcryptjs";
 
 export async function POST(request) {
@@ -61,7 +62,15 @@ export async function POST(request) {
         password: hashedPassword,
       });
 
+      const newCode = new VerificationCodeModel({
+        userId: newUser._id,
+        code: verificationCode,
+        expires: expiryDate,
+      });
+
       await newUser.save();
+      await newCode.save();
+      console.log("Verification code created : ", newCode);
     }
     // send verification email
     const subject = "BDTOON Account Verification";
