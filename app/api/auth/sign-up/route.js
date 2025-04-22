@@ -14,14 +14,27 @@ import { VerificationCodeModel } from "@/models/verification";
 import { signUpSchema } from "@/lib/schema/signUpSchema";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
-import { encryptUserId } from "@/lib/aes-algorithm";
+import { encrypt } from "@/lib/aes-algorithm";
 
 export async function POST(request) {
+  let encryptedUserId;
+
   await dbConnect();
 
   try {
-    const { username, firstname, lastname, email, password } =
-      await request.json();
+    const {
+      username: originalUsername,
+      firstname: originalFirstname,
+      lastname: originalLastname,
+      email: originalEmail,
+      password,
+      confirmPassword,
+    } = await request.json();
+
+    const username = originalUsername.toLowerCase().trim();
+    const email = originalEmail.toLowerCase().trim();
+    const firstname = originalFirstname.trim();
+    const lastname = originalLastname.trim();
 
     const result = await signUpSchema.safeParseAsync({
       username,
@@ -29,6 +42,7 @@ export async function POST(request) {
       lastname,
       email,
       password,
+      confirmPassword,
     });
 
     if (!result.success) {
@@ -37,25 +51,34 @@ export async function POST(request) {
     }
 
     const existingUserVerifiedByUsername = await UserModel.findOne({
-      username,
+      username: username,
       isVerified: true,
     });
 
     if (existingUserVerifiedByUsername) {
-      return sendErrorResponse("Username is already taken", 400);
+      return sendErrorResponse("Username is already taken", 400, "username");
     }
 
-    const existingUserByEmail = await UserModel.findOne({ email });
+    const existingUserByEmail = await UserModel.findOne({
+      email: email,
+    });
     const { code, expiryDate } = await generateCodeAndExpiry();
-    let encryptedUserId;
     if (existingUserByEmail) {
       if (existingUserByEmail.isVerified) {
-        return sendErrorResponse("User already by this email", 400);
+        return sendErrorResponse(
+          "User already exists by this email",
+          400,
+          "email"
+        );
       } else {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         existingUserByEmail.password = hashedPassword;
         await existingUserByEmail.save();
+
+        encryptedUserId = await encrypt(existingUserByEmail._id.toString());
+
+        console.log(encryptedUserId);
       }
     } else {
       const hashedPassword = await bcrypt.hash(password, 10);
@@ -76,13 +99,14 @@ export async function POST(request) {
         expires: expiryDate,
       });
 
-      console.log(newUser);
-      encryptedUserId = await encryptUserId(newUser._id);
+      console.log(newUser._id.toString());
+      encryptedUserId = await encrypt(newUser._id.toString());
 
       await newUser.save();
       await newCode.save();
-      console.log("Verification code created : ", newCode);
+      // console.log("Verification code created : ", newCode);
     }
+
     // send verification email
     const subject = "BDTOON Account Verification";
     const html = VerificationEmail({ username, code });
@@ -94,13 +118,10 @@ export async function POST(request) {
     }
 */
 
-    return Response.json(
-      {
-        success: true,
-        message: "User registered successfully. Please verify your email",
-        userId: encryptedUserId,
-      },
-      { status: 201 }
+    return sendSuccessResponse(
+      "User registered successfully. Please verify your email",
+      201,
+      { userId: encryptedUserId }
     );
   } catch (error) {
     if (error instanceof z.ZodError) {

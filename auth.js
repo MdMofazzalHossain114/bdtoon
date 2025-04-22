@@ -44,14 +44,15 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
               { username: validatedIdentifier },
             ],
           });
-          console.log("User - ", user);
 
           if (!user) {
             throw new Error("User not found");
           }
 
           if (!user.isVerified) {
-            throw new Error("Please verify your account before login");
+            throw new Error(
+              encodeURIComponent("Please verify your account before login")
+            );
           }
 
           const isPasswordCorrect = await bcrypt.compare(
@@ -77,7 +78,8 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     }),
   ],
   pages: {
-    signIn: "/sign-in",
+    signIn: "/login",
+    error: "/login",
   },
   session: {
     strategy: "jwt",

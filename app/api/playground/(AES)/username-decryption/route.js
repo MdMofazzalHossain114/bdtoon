@@ -1,16 +1,16 @@
-import { decryptUserId } from "@/lib/aes-algorithm";
+import { decrypt } from "@/lib/aes-algorithm";
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
-  const encryptedData = searchParams.get("username");
+  const encryptedData = searchParams.get("data");
 
-  // Username encrypted using AES algorithm
-  const username = decryptUserId(encryptedData);
+  // data encrypted using AES algorithm
+  const data = await decrypt(encryptedData);
 
   return Response.json(
     {
       success: true,
-      message: username,
+      message: data,
     },
     { status: 200 }
   );

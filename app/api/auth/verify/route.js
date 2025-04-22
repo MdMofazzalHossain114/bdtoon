@@ -1,4 +1,4 @@
-import { decryptUserId } from "@/lib/aes-algorithm";
+import { decrypt } from "@/lib/aes-algorithm";
 import dbConnect from "@/lib/dbConnect";
 import {
   sendErrorResponse,
@@ -16,7 +16,7 @@ export async function POST(request) {
   const encryptedUsername = searchParams.get("q");
 
   // username decrypted using AES algorithm
-  const decryptedUserId = decryptUserId(encryptedUsername);
+  const decryptedUserId = await decrypt(encryptedUsername);
   console.log("Decrypted username - ", decryptedUserId);
 
   try {
