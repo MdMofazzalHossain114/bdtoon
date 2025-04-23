@@ -13,6 +13,7 @@ import FormSeperator from "@/components/ui/form-seperator";
 import { toast } from "sonner";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Label from "../Label";
 
 const RegistrationForm = () => {
   const router = useRouter();
@@ -38,8 +39,11 @@ const RegistrationForm = () => {
     console.log("Axios Response", data);
     try {
       const response = await axios.post("/api/auth/sign-up", data);
+      toast.success("Account created successfully");
 
-      router.push(`/verify?q=${response.data.userId}`);
+      router.push(
+        `/verify?q=${response.data.userId}&p=${response.data.encryptedPassword}`
+      );
       console.log(response);
     } catch (error) {
       const responseData = error.response?.data;
@@ -63,10 +67,11 @@ const RegistrationForm = () => {
       <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
         <div className="grid gap-4 md:grid-cols-2">
           <div className="space-y-2">
+            <Label htmlFor="firstname">Firstname</Label>
             <Input
               id="firstname"
               className="h-12 border-gray-800 bg-gray-900 text-white placeholder:text-gray-400"
-              placeholder="Firstname"
+              placeholder="i.e. Mohammad"
               type="text"
               {...register("firstname")}
             />
@@ -75,10 +80,11 @@ const RegistrationForm = () => {
             )}
           </div>
           <div className="space-y-2">
+            <Label htmlFor="lastname">Lastname</Label>
             <Input
               id="lastname"
               className="h-12 border-gray-800 bg-gray-900 text-white placeholder:text-gray-400"
-              placeholder="Lastname"
+              placeholder="i.e. Hossain"
               type="text"
               {...register("lastname")}
             />
@@ -89,10 +95,11 @@ const RegistrationForm = () => {
         </div>
 
         <div className="space-y-2">
+          <Label htmlFor="username">Username</Label>
           <Input
             id="username"
             className="h-12 border-gray-800 bg-gray-900 text-white placeholder:text-gray-400"
-            placeholder="username"
+            placeholder="i.e. mohammad"
             type="text"
             {...register("username")}
           />
@@ -101,34 +108,38 @@ const RegistrationForm = () => {
           )}
         </div>
         <div className="space-y-2">
+          <Label htmlFor="email">Email</Label>
           <Input
             id="email"
             className="h-12 border-gray-800 bg-gray-900 text-white placeholder:text-gray-400"
-            placeholder="address@example.com"
+            placeholder="i.e. mohammad@gmail.com"
             type="email"
             {...register("email")}
           />
           {errors.email && <ErrorMessage>{errors.email.message}</ErrorMessage>}
         </div>
 
-        <div className="space-y-2 relative">
-          <Input
-            id="password"
-            className="h-12 border-gray-800 bg-gray-900 text-white placeholder:text-gray-400"
-            placeholder="******"
-            type={showPassword ? "text" : "password"}
-            {...register("password")}
-          />
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            tabIndex="-1"
-            onClick={() => setShowPassword(!showPassword)}
-            className={cn("absolute right-2 top-1 text-white")}
-          >
-            {showPassword ? <EyeOffIcon /> : <EyeIcon />}
-          </Button>
+        <div className="space-y-2">
+          <Label htmlFor="password">Password</Label>
+          <div className="relative">
+            <Input
+              id="password"
+              className="h-12 border-gray-800 bg-gray-900 text-white placeholder:text-gray-400"
+              placeholder="******"
+              type={showPassword ? "text" : "password"}
+              {...register("password")}
+            />
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              tabIndex="-1"
+              onClick={() => setShowPassword(!showPassword)}
+              className={cn("absolute right-2 top-1 text-white")}
+            >
+              {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+            </Button>
+          </div>
           {errors.password ? (
             <ErrorMessage>{errors.password.message}</ErrorMessage>
           ) : (
@@ -137,24 +148,27 @@ const RegistrationForm = () => {
             </p>
           )}
         </div>
-        <div className="space-y-2 relative">
-          <Input
-            id="confirmPassword"
-            className="h-12 border-gray-800 bg-gray-900 text-white placeholder:text-gray-400"
-            placeholder="******"
-            type={showConfirmPassword ? "text" : "password"}
-            {...register("confirmPassword")}
-          />
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            tabIndex="-1"
-            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            className={cn("absolute right-2 top-1 text-white")}
-          >
-            {showPassword ? <EyeOffIcon /> : <EyeIcon />}
-          </Button>
+        <div className="space-y-2">
+          <Label htmlFor="confirmPassword">Confirm Password</Label>
+          <div className="relative">
+            <Input
+              id="confirmPassword"
+              className="h-12 border-gray-800 bg-gray-900 text-white placeholder:text-gray-400"
+              placeholder="******"
+              type={showConfirmPassword ? "text" : "password"}
+              {...register("confirmPassword")}
+            />
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              tabIndex="-1"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              className={cn("absolute right-2 top-1 text-white")}
+            >
+              {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+            </Button>
+          </div>
           {errors.confirmPassword ? (
             <ErrorMessage>{errors.confirmPassword.message}</ErrorMessage>
           ) : (
@@ -168,7 +182,7 @@ const RegistrationForm = () => {
           disabled={isSubmitting}
           className="h-12 w-full bg-white text-black hover:bg-gray-100"
         >
-          Sign Up
+          {isSubmitting ? "Creating..." : "Create account"}
         </Button>
 
         <p className="text-center text-sm text-gray-400">

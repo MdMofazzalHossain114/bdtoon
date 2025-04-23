@@ -18,6 +18,10 @@ const verificationCodeSchema = new Schema(
       type: Date,
       required: true,
     },
+    attempts: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,
@@ -39,6 +43,10 @@ const passwordResetTokenSchema = new Schema(
     expires: {
       type: Date,
       required: true,
+    },
+    attempts: {
+      type: Number,
+      default: 0,
     },
   },
   {

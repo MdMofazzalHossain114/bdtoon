@@ -1,9 +1,11 @@
+import { signIn } from "@/auth";
 import { decrypt } from "@/lib/aes-algorithm";
 import dbConnect from "@/lib/dbConnect";
 import {
   sendErrorResponse,
   sendSuccessResponse,
 } from "@/lib/helpers/responseHelpers";
+import { deleteAllExpiredVerificationCodes } from "@/lib/helpers/verificationCode";
 import UserModel from "@/models/user";
 import { VerificationCodeModel } from "@/models/verification";
 import mongoose from "mongoose";
@@ -11,22 +13,23 @@ import mongoose from "mongoose";
 export async function POST(request) {
   await dbConnect();
 
-  // Example - localhost:3000/verify?q=ENCRYPTED_USERNAME
-  const { searchParams } = new URL(request.url);
-  const encryptedUsername = searchParams.get("q");
-
-  // username decrypted using AES algorithm
-  const decryptedUserId = await decrypt(encryptedUsername);
-  console.log("Decrypted username - ", decryptedUserId);
-
   try {
     // Delete all the verification codes that is expired
-    await VerificationCodeModel.deleteMany({
-      expires: { $lt: new Date() },
-    });
+    await deleteAllExpiredVerificationCodes();
 
     // Get the verification code and username from the request body
-    const { code, userId } = await request.json();
+    const { code, encryptedUserId, encryptedPassword } = await request.json();
+    console.log(
+      "Verify API Request - ",
+      code,
+      encryptedUserId,
+      encryptedPassword
+    );
+
+    const userId = await decrypt(encryptedUserId);
+    const password = await decrypt(encryptedPassword);
+
+    console.log("User ID and Password - ", userId, password);
 
     if (!code || !userId) {
       return sendErrorResponse("Missing required fields", 400);
@@ -42,10 +45,6 @@ export async function POST(request) {
       return sendErrorResponse("User not found", 404);
     }
 
-    if (user._id.toString() !== decryptedUserId) {
-      return sendErrorResponse("Only owner can verify his account", 400);
-    }
-
     if (user.isVerified) {
       return sendErrorResponse("User already verified", 400);
     }
@@ -56,7 +55,7 @@ export async function POST(request) {
     });
 
     if (!verificationCode) {
-      console.log(verificationCode, code);
+      console.log("Invalid Verification Code", verificationCode, code);
       return sendErrorResponse("Invalid verification code", 400);
     }
 
@@ -79,7 +78,10 @@ export async function POST(request) {
       $or: [{ email: user.email }, { username: user.username }],
     });
 
-    return sendSuccessResponse("User verified successfully", 200);
+    return sendSuccessResponse("User verified successfully", 200, {
+      username: user.username,
+      password,
+    });
   } catch (error) {
     console.log("Error verifying user", error);
     return sendErrorResponse("Error verifying user", 500);

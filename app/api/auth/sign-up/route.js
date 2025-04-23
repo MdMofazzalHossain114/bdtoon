@@ -110,18 +110,19 @@ export async function POST(request) {
     // send verification email
     const subject = "BDTOON Account Verification";
     const html = VerificationEmail({ username, code });
-    /*
+
     const emailResponse = await sendEmail({ to: email, subject, html });
 
     if (!emailResponse.success) {
       return sendErrorResponse(emailResponse.message, 500);
     }
-*/
+
+    const encryptedPassword = await encrypt(password);
 
     return sendSuccessResponse(
       "User registered successfully. Please verify your email",
       201,
-      { userId: encryptedUserId }
+      { userId: encryptedUserId, encryptedPassword }
     );
   } catch (error) {
     if (error instanceof z.ZodError) {

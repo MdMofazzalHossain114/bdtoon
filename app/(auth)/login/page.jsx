@@ -5,15 +5,24 @@ import { Input } from "@/components/ui/input";
 import { loginSchema } from "@/lib/schema/loginSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Github } from "lucide-react";
-import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { signIn, useSession } from "next-auth/react";
+import { redirect, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import ErrorMessage from "../ErrorMessage";
 import Label from "../Label";
 
 export default function SignUpPage() {
+  const searchParams = useSearchParams();
+  const session = useSession();
+
+  const isVerification = searchParams.get("v");
+  const username = searchParams.get("u");
+  const password = searchParams.get("p");
+
+  console.log(session);
+
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
   const {
@@ -26,12 +35,36 @@ export default function SignUpPage() {
 
   const [authError, setAuthError] = useState("");
 
+  useEffect(() => {
+    const proceedLogin = async () => {
+      try {
+        const res = await signIn("credential", {
+          redirect: false,
+          identifier: username,
+          password,
+        });
+
+        console.log("response", res);
+        redirect("/setup-your-profile");
+      } catch (error) {
+        console.log("Error Logging in after verification", error);
+        toast.error("Error logging in after verification");
+      }
+    };
+
+    if (isVerification) {
+      setSubmitting(true);
+      proceedLogin();
+      setSubmitting(false);
+    }
+  }, [isVerification, username, password]);
+
   const onSubmit = async (data) => {
     setSubmitting(true);
     setAuthError("");
 
     const res = await signIn("credential", {
-      redirect: false,
+      redirect: "/",
       ...data,
     });
     console.log("response", res);
@@ -43,8 +76,6 @@ export default function SignUpPage() {
       } else {
         setAuthError(res.error);
       }
-    } else {
-      router.push("/");
     }
 
     setSubmitting(false);

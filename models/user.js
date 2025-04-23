@@ -33,8 +33,8 @@ const userSchema = new Schema(
     },
     role: {
       type: String,
-      enum: ["user", "seller", "buyer", "admin", "moderator"],
-      default: "user",
+      enum: ["guest", "user", "seller", "buyer", "admin", "moderator"],
+      default: "guest",
     },
     isVerified: {
       type: Boolean,

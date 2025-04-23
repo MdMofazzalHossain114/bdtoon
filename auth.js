@@ -25,6 +25,8 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
 
         const { identifier, password } = credentials;
 
+        console.log("From AUTH - ", identifier, password);
+
         try {
           // Validate using Zod
           const result = await loginSchema.safeParseAsync({
@@ -133,6 +135,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         token._id = user._id?.toString();
         token.isVerified = user.isVerified;
         token.username = user.username;
+        token.role = user.role;
       }
 
       return token;
@@ -140,9 +143,10 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
 
     async session({ session, token }) {
       if (token) {
-        session.user._id = token._id;
+        session.user.id = token._id;
         session.user.username = token.username;
         session.user.isVerified = token.isVerified;
+        session.user.role = token.role;
       }
 
       return session;

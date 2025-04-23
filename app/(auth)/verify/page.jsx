@@ -2,10 +2,21 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter, useSearchParams } from "next/navigation";
+import { verifySchema } from "@/lib/schema/verifySchema";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
+import { toast } from "sonner";
+import { signIn } from "next-auth/react";
+import { cn } from "@/lib/utils";
 
 export default function OTPVerificationPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
   const [otp, setOtp] = useState(Array(6).fill(""));
   const [timeLeft, setTimeLeft] = useState(60);
@@ -14,7 +25,7 @@ export default function OTPVerificationPage() {
 
   useEffect(() => {
     if (timeLeft > 0 && !isResendActive) {
-      const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
+      const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 10);
       return () => clearTimeout(timer);
     } else if (timeLeft === 0) {
       setIsResendActive(true);
@@ -22,6 +33,8 @@ export default function OTPVerificationPage() {
   }, [timeLeft, isResendActive]);
 
   const handleChange = (index, value) => {
+    setError("");
+
     if (!/^\d*$/.test(value)) return;
 
     const newOtp = [...otp];
@@ -34,6 +47,7 @@ export default function OTPVerificationPage() {
   };
 
   const handleKeyDown = (index, e) => {
+    setError("");
     if (e.key === "Backspace" && !otp[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
@@ -41,6 +55,9 @@ export default function OTPVerificationPage() {
 
   const handlePaste = (e) => {
     e.preventDefault();
+
+    setError("");
+
     const pastedData = e.clipboardData.getData("text");
     if (!/^\d+$/.test(pastedData)) return;
 
@@ -63,20 +80,66 @@ export default function OTPVerificationPage() {
     }
   };
 
-  const handleResend = () => {
+  const handleResend = async () => {
+    setError("");
+
     setOtp(Array(6).fill(""));
     setTimeLeft(60);
     setIsResendActive(false);
     inputRefs.current[0]?.focus();
-    // You would typically call an API here
+
+    const userId = searchParams.get("q");
+
+    console.log(userId);
+
+    try {
+      const response = await axios.post("/api/auth/resend-verification-code", {
+        encryptedUserId: userId,
+      });
+
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+      const resData = error.response?.data;
+
+      if (resData?.message) {
+        toast.error(resData.message);
+      }
+    }
   };
 
-  const handleVerify = () => {
+  const handleVerify = async (e) => {
+    e.preventDefault();
+
+    setIsSubmitting(true);
+    setError("");
     const otpValue = otp.join("");
     if (otpValue.length === 6) {
       console.log("Verifying OTP:", otpValue);
-      // You would typically call an API here
+      try {
+        const res = await axios.post(`/api/auth/verify`, {
+          code: otpValue,
+          encryptedUserId: searchParams.get("q"),
+          encryptedPassword: searchParams.get("p"),
+        });
+        toast.success("Account created successfully");
+
+        console.log("Response from verify API", res.data);
+        setError("");
+        router.push(`/login?v=1&u=${res.data.username}&p=${res.data.password}`);
+      } catch (error) {
+        console.log("Error verifying OTP", error);
+        const resData = error.response?.data;
+        if (resData?.message) {
+          toast.error(resData.message);
+        } else {
+          toast.error("Error verifying OTP");
+        }
+
+        setError("Invalid OTP");
+      }
     }
+    setIsSubmitting(false);
   };
 
   return (
@@ -148,7 +211,10 @@ export default function OTPVerificationPage() {
                     onChange={(e) => handleChange(index, e.target.value)}
                     onKeyDown={(e) => handleKeyDown(index, e)}
                     onPaste={index === 0 ? handlePaste : undefined}
-                    className="h-16 w-12 rounded-lg border border-gray-800 bg-gray-900 text-center text-xl text-white focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500 md:h-20 md:w-14"
+                    className={cn(
+                      "h-16 w-12 rounded-lg border border-gray-800 bg-gray-900 text-center text-xl text-white focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500 md:h-20 md:w-14",
+                      error && "border-red-500"
+                    )}
                     autoFocus={index === 0}
                   />
                 ))}
@@ -157,6 +223,7 @@ export default function OTPVerificationPage() {
                 Didn't receive the code?{" "}
                 {isResendActive ? (
                   <button
+                    type="button"
                     onClick={handleResend}
                     className="text-purple-400 hover:text-purple-300"
                   >
@@ -169,11 +236,12 @@ export default function OTPVerificationPage() {
             </div>
 
             <Button
+              type="submit"
               onClick={handleVerify}
-              disabled={otp.join("").length !== 6}
+              disabled={otp.join("").length !== 6 || isSubmitting}
               className="h-12 w-full bg-white text-black hover:bg-gray-100 disabled:bg-gray-600 disabled:text-gray-300"
             >
-              Verify
+              {isSubmitting ? "Verifying..." : "Verify"}
             </Button>
 
             <p className="mt-6 text-center text-sm text-gray-400">
