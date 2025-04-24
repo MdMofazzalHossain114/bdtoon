@@ -69,7 +69,7 @@ const RegistrationForm = () => {
           <div className="space-y-2">
             <Label htmlFor="firstname">Firstname</Label>
             <Input
-              disabled={submitting}
+              disabled={isSubmitting}
               id="firstname"
               className="h-12 border-gray-800 bg-gray-900 text-white placeholder:text-gray-400"
               placeholder="i.e. Mohammad"
@@ -83,7 +83,7 @@ const RegistrationForm = () => {
           <div className="space-y-2">
             <Label htmlFor="lastname">Lastname</Label>
             <Input
-              disabled={submitting}
+              disabled={isSubmitting}
               id="lastname"
               className="h-12 border-gray-800 bg-gray-900 text-white placeholder:text-gray-400"
               placeholder="i.e. Hossain"
@@ -99,7 +99,7 @@ const RegistrationForm = () => {
         <div className="space-y-2">
           <Label htmlFor="username">Username</Label>
           <Input
-            disabled={submitting}
+            disabled={isSubmitting}
             id="username"
             className="h-12 border-gray-800 bg-gray-900 text-white placeholder:text-gray-400"
             placeholder="i.e. mohammad"
@@ -113,7 +113,7 @@ const RegistrationForm = () => {
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
           <Input
-            disabled={submitting}
+            disabled={isSubmitting}
             id="email"
             className="h-12 border-gray-800 bg-gray-900 text-white placeholder:text-gray-400"
             placeholder="i.e. mohammad@gmail.com"
@@ -127,7 +127,7 @@ const RegistrationForm = () => {
           <Label htmlFor="password">Password</Label>
           <div className="relative">
             <Input
-              disabled={submitting}
+              disabled={isSubmitting}
               id="password"
               className="h-12 border-gray-800 bg-gray-900 text-white placeholder:text-gray-400"
               placeholder="******"
@@ -157,7 +157,7 @@ const RegistrationForm = () => {
           <Label htmlFor="confirmPassword">Confirm Password</Label>
           <div className="relative">
             <Input
-              disabled={submitting}
+              disabled={isSubmitting}
               id="confirmPassword"
               className="h-12 border-gray-800 bg-gray-900 text-white placeholder:text-gray-400"
               placeholder="******"

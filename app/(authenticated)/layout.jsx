@@ -5,10 +5,6 @@ import { redirect } from "next/navigation";
 const layout = async ({ children }) => {
   const user = await getAuthenticatedUser();
 
-  if (user.role === "guest") {
-    redirect("/setup-your-profile");
-  }
-
   return <>{children}</>;
 };
 

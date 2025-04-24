@@ -18,6 +18,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import axios from "axios";
+import { H1 } from "@/components/ui/typography";
 
 export default function SignUpPage() {
   const searchParams = useSearchParams();
@@ -122,7 +123,7 @@ export default function SignUpPage() {
         <div className="h-full w-full overflow-hidden rounded-[40px] bg-gradient-to-b from-emerald-500 via-green-800 to-black">
           <div className="flex h-full flex-col items-center justify-center px-8 text-center text-white">
             <div className="mb-8">
-              <h1 className="text-2xl font-semibold">BDTOON</h1>
+              <H1>BDTOON</H1>
             </div>
             <h2 className="mb-6 text-4xl font-bold">Get Started with Us</h2>
             <p className="mb-12 text-lg">

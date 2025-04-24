@@ -10,6 +10,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import { signIn } from "next-auth/react";
 import { cn } from "@/lib/utils";
+import { H1 } from "@/components/ui/typography";
 
 export default function OTPVerificationPage() {
   const router = useRouter();
@@ -149,7 +150,7 @@ export default function OTPVerificationPage() {
         <div className="h-full w-full overflow-hidden rounded-[40px] bg-gradient-to-b from-emerald-500 via-green-800 to-black">
           <div className="flex h-full flex-col items-center justify-center px-8 text-center text-white">
             <div className="mb-8">
-              <h1 className="text-2xl font-semibold">Flowers&Saints</h1>
+              <H1>BDTOON</H1>
             </div>
             <h2 className="mb-6 text-4xl font-bold">Verify Your Account</h2>
             <p className="mb-12 text-lg">

@@ -7,10 +7,6 @@ import dbConnect from "@/lib/dbConnect";
 const page = async () => {
   const session = await auth();
 
-  if (session.user.role !== "guest") {
-    redirect("/");
-  }
-
   return <ProfileSetupPage />;
 };
 

@@ -1,5 +1,6 @@
 import { getAuthenticatedUser } from "@/lib/helpers/user";
 import { redirect } from "next/navigation";
+import LeftSidebar from "./LeftSidebar";
 
 const layout = async ({ children }) => {
   const user = await getAuthenticatedUser();
@@ -8,7 +9,12 @@ const layout = async ({ children }) => {
     redirect("/");
   }
 
-  return <>{children}</>;
+  return (
+    <div className="w-full h-full flex">
+      <LeftSidebar />
+      {children}
+    </div>
+  );
 };
 
 export default layout;

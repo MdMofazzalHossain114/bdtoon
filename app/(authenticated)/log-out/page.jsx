@@ -5,7 +5,10 @@ import { signOut } from "next-auth/react";
 
 const page = () => {
   useEffect(() => {
-    signOut();
+    const logout = async () => {
+      await signOut();
+    };
+    logout();
   }, []);
 
   return <div>page</div>;
