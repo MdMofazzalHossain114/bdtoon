@@ -1,7 +1,10 @@
 "use client";
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { H1, H2, H3, P } from "@/components/ui/typography";
 import { signOut, useSession } from "next-auth/react";
+import Image from "next/image";
 import { redirect } from "next/navigation";
 
 const HomePage = () => {
@@ -12,15 +15,11 @@ const HomePage = () => {
     redirect("/login");
   }
 
-  return (
-    <div>
-      <h1>Home Page</h1>
+  if (session.status === "loading") {
+    return <div>Loading...</div>;
+  }
 
-      <Button variant="destructive" onClick={() => signOut()}>
-        Log Out
-      </Button>
-    </div>
-  );
+  return <div>Home Page</div>;
 };
 
 export default HomePage;

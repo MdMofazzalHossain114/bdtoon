@@ -119,6 +119,8 @@ export async function POST(request) {
 
     const encryptedPassword = await encrypt(password);
 
+    console.log("Verification code created : ", code);
+
     return sendSuccessResponse(
       "User registered successfully. Please verify your email",
       201,

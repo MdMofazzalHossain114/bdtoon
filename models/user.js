@@ -15,6 +15,10 @@ const userSchema = new Schema(
       type: String,
       required: true,
     },
+    displayName: {
+      type: String,
+    },
+
     email: {
       type: String,
       required: true,
@@ -33,8 +37,13 @@ const userSchema = new Schema(
     },
     role: {
       type: String,
-      enum: ["guest", "user", "seller", "buyer", "admin", "moderator"],
+      enum: ["guest", "user", "creator", "client", "admin"],
       default: "guest",
+    },
+    accountType: {
+      type: String,
+      enum: ["viewer", "seller", "buyer"],
+      default: "viewer",
     },
     isVerified: {
       type: Boolean,
@@ -48,6 +57,15 @@ const userSchema = new Schema(
     bio: {
       type: String,
       default: "",
+    },
+    themePreference: {
+      type: String,
+      enum: ["light", "dark", "system"],
+      default: "system",
+    },
+    emailNotifications: {
+      type: Boolean,
+      default: true,
     },
   },
   {

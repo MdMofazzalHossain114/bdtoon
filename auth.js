@@ -7,6 +7,7 @@ import UserModel from "./models/user";
 import bcrypt from "bcryptjs";
 import { loginSchema } from "./lib/schema/loginSchema";
 import { z } from "zod";
+import { redirect } from "next/navigation";
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
   providers: [
@@ -52,9 +53,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
           }
 
           if (!user.isVerified) {
-            throw new Error(
-              encodeURIComponent("Please verify your account before login")
-            );
+            throw new Error("UNVERIFIED");
           }
 
           const isPasswordCorrect = await bcrypt.compare(
@@ -130,12 +129,19 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       return true; // proceed with sign-in
     },
 
-    async jwt({ user, token }) {
+    async jwt({ user, token, trigger, session }) {
       if (user) {
         token._id = user._id?.toString();
         token.isVerified = user.isVerified;
         token.username = user.username;
         token.role = user.role;
+        token.profilePicture = user.profilePicture;
+      }
+
+      // If session.update() is called, apply changes here
+      if (trigger === "update" && (session?.role || session?.profilePicture)) {
+        token.role = session.role;
+        token.profilePicture = session.profilePicture;
       }
 
       return token;
@@ -147,6 +153,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         session.user.username = token.username;
         session.user.isVerified = token.isVerified;
         session.user.role = token.role;
+        session.user.profilePicture = token.profilePicture;
       }
 
       return session;

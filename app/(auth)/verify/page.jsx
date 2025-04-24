@@ -131,7 +131,7 @@ export default function OTPVerificationPage() {
         console.log("Error verifying OTP", error);
         const resData = error.response?.data;
         if (resData?.message) {
-          toast.error(resData.message);
+          toast.error(resData.message, { position: "top-center" });
         } else {
           toast.error("Error verifying OTP");
         }
@@ -146,7 +146,7 @@ export default function OTPVerificationPage() {
     <div className="flex min-h-screen bg-black">
       {/* Left Section */}
       <div className="relative hidden w-1/2 p-8 lg:block">
-        <div className="h-full w-full overflow-hidden rounded-[40px] bg-gradient-to-b from-purple-400 via-purple-600 to-black">
+        <div className="h-full w-full overflow-hidden rounded-[40px] bg-gradient-to-b from-emerald-500 via-green-800 to-black">
           <div className="flex h-full flex-col items-center justify-center px-8 text-center text-white">
             <div className="mb-8">
               <h1 className="text-2xl font-semibold">Flowers&Saints</h1>

@@ -1,15 +1,15 @@
-import { auth } from "@/auth";
 import { getAuthenticatedUser } from "@/lib/helpers/user";
-import { redirect } from "next/navigation";
+import Topbar from "./Topbar";
 
 const layout = async ({ children }) => {
   const user = await getAuthenticatedUser();
 
-  if (user.role === "guest") {
-    redirect("/setup-your-profile");
-  }
-
-  return <>{children}</>;
+  return (
+    <>
+      <Topbar />
+      {children}
+    </>
+  );
 };
 
 export default layout;

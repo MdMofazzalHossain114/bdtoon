@@ -4,14 +4,20 @@ import FormSeperator from "@/components/ui/form-seperator";
 import { Input } from "@/components/ui/input";
 import { loginSchema } from "@/lib/schema/loginSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Github } from "lucide-react";
+import { Github, InfoIcon } from "lucide-react";
 import { signIn, useSession } from "next-auth/react";
-import { redirect, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import ErrorMessage from "../ErrorMessage";
 import Label from "../Label";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import axios from "axios";
 
 export default function SignUpPage() {
   const searchParams = useSearchParams();
@@ -29,6 +35,7 @@ export default function SignUpPage() {
     register,
     handleSubmit,
     formState: { errors },
+    setError,
   } = useForm({
     resolver: zodResolver(loginSchema),
   });
@@ -37,6 +44,7 @@ export default function SignUpPage() {
 
   useEffect(() => {
     const proceedLogin = async () => {
+      setSubmitting(true);
       try {
         const res = await signIn("credential", {
           redirect: false,
@@ -45,17 +53,17 @@ export default function SignUpPage() {
         });
 
         console.log("response", res);
-        redirect("/setup-your-profile");
+        router.push("/setup-your-profile");
       } catch (error) {
         console.log("Error Logging in after verification", error);
         toast.error("Error logging in after verification");
       }
+
+      setSubmitting(false);
     };
 
     if (isVerification) {
-      setSubmitting(true);
       proceedLogin();
-      setSubmitting(false);
     }
   }, [isVerification, username, password]);
 
@@ -63,18 +71,44 @@ export default function SignUpPage() {
     setSubmitting(true);
     setAuthError("");
 
-    const res = await signIn("credential", {
-      redirect: "/",
-      ...data,
-    });
-    console.log("response", res);
+    try {
+      const existingAccount = await axios.post("/api/auth/login", {
+        identifier: data.identifier,
+        password: data.password,
+      });
 
-    if (res?.error) {
-      if (res.error.includes("Configuration")) {
-        toast.error("Invalid Credentials", { position: "top-center" });
-        setAuthError("Please check your credentials and try again");
+      if (existingAccount.data.toVerify) {
+        router.push(
+          `/verify?p=${existingAccount.data.encryptedPassword}&q=${existingAccount.data.encryptedUserId}`
+        );
+      }
+
+      const res = await signIn("credential", {
+        redirect: "/",
+        ...data,
+      });
+      console.log("response", res);
+
+      if (res?.error) {
+        if (res.error.includes("Configuration")) {
+          toast.error("Invalid Credentials", { position: "top-center" });
+          setAuthError("Please check your credentials and try again");
+        } else {
+          router.push("/");
+          setAuthError(res.error);
+        }
+      }
+    } catch (error) {
+      console.log("Error checking if user exists", error);
+      const resData = error?.response?.data;
+
+      if (resData?.field) {
+        setError(resData.field, {
+          type: "manual",
+          message: resData.message,
+        });
       } else {
-        setAuthError(res.error);
+        toast.error("Something went wrong", { position: "top-center" });
       }
     }
 
@@ -139,21 +173,43 @@ export default function SignUpPage() {
             <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
               <div className="space-y-2">
                 <Label htmlFor="identifier">Email Address or Username</Label>
-                <Input
-                  id="identifier"
-                  className="h-12 border-gray-800 bg-gray-900 text-white placeholder:text-gray-400"
-                  placeholder="mofazzal@gmail.com"
-                  type="text"
-                  {...register("identifier")}
-                />
-                {errors.identifier && (
-                  <ErrorMessage>{errors.identifier.message}</ErrorMessage>
-                )}
+                <div className="relative">
+                  <Input
+                    disabled={submitting}
+                    id="identifier"
+                    className="h-12 border-gray-800 bg-gray-900 text-white placeholder:text-gray-400"
+                    placeholder="mofazzal@gmail.com"
+                    type="text"
+                    {...register("identifier")}
+                  />
+                  {errors.identifier && (
+                    <>
+                      <div className="absolute right-2 top-3 text-red-500">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <InfoIcon />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="text-sm text-center">
+                              Username must be 3–20 characters,
+                              <br /> start with a letter, and only contain
+                              letters,
+                              <br /> numbers, or dots (no double dots or special
+                              characters). <br /> Or use a valid email address.
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </div>
+                      <ErrorMessage>{errors.identifier.message}</ErrorMessage>
+                    </>
+                  )}
+                </div>
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
                 <Input
+                  disabled={submitting}
                   id="password"
                   className="h-12 border-gray-800 bg-gray-900 text-white placeholder:text-gray-400"
                   placeholder="*******"
@@ -195,7 +251,7 @@ export default function SignUpPage() {
               </p>
             </form>
 
-            <FormSeperator />
+            {/* <FormSeperator />
 
             <div className="mb-8 grid gap-4">
               <Button variant="outline" className="h-12">
@@ -223,7 +279,7 @@ export default function SignUpPage() {
                 <Github className="mr-2 h-5 w-5" />
                 Github
               </Button>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
