@@ -2,18 +2,22 @@ import React from "react";
 import LeftSidebar from "./LeftSidebar";
 import RightSidebar from "./RightSidebar";
 import Feed from "./Feed";
-import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import { getAuthenticatedUser } from "@/lib/helpers/user";
 
 const page = async () => {
-  const session = await auth();
+  const user = await getAuthenticatedUser();
 
-  if (session.user.role === "guest") {
+  if (!user) {
+    redirect("/login");
+  }
+
+  if (user && user.role === "guest") {
     redirect("/setup-your-profile");
   }
 
   return (
-    <div className="w-full h-full flex pt-[76px]">
+    <div className="w-full h-full flex pt-[76px] bg-background">
       <LeftSidebar />
       <Feed />
       <RightSidebar />

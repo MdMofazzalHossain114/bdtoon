@@ -1,6 +1,8 @@
 import { getAuthenticatedUser } from "@/lib/helpers/user";
 import { redirect } from "next/navigation";
 import LeftSidebar from "./LeftSidebar";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "./app-sidebar";
 
 const layout = async ({ children }) => {
   const user = await getAuthenticatedUser();
@@ -10,10 +12,12 @@ const layout = async ({ children }) => {
   }
 
   return (
-    <div className="w-full h-full flex">
-      <LeftSidebar />
-      {children}
-    </div>
+    <SidebarProvider>
+      <AppSidebar>
+        <SidebarTrigger />
+        {children}
+      </AppSidebar>
+    </SidebarProvider>
   );
 };
 

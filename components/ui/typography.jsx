@@ -1,42 +1,61 @@
-export const H1 = ({ children }) => {
+import { cn } from "@/lib/utils";
+
+export const H1 = ({ children, className }) => {
   return (
-    <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
+    <h1
+      className={cn(
+        "text-foreground scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl",
+        className
+      )}
+    >
       {children}
     </h1>
   );
 };
 
-export const H2 = ({ children }) => {
+export const H2 = ({ children, className }) => {
   return (
-    <h2 className="scroll-m-20 pb-2 text-3xl font-semibold tracking-tight transition-colors">
+    <h2
+      className={cn(
+        "text-foreground scroll-m-20 pb-2 text-3xl font-semibold tracking-tight transition-colors",
+        className
+      )}
+    >
       {children}
     </h2>
   );
 };
 
-export const H3 = ({ children }) => {
+export const H3 = ({ children, className }) => {
   return (
-    <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
+    <h3
+      className={cn(
+        "scroll-m-20 text-2xl font-semibold tracking-tight",
+        className
+      )}
+    >
       {children}
     </h3>
   );
 };
 
-export const P = ({ children }) => {
-  return <p className="leading-7">{children}</p>;
+export const P = ({ children, className }) => {
+  return <p className={cn("leading-7", className)}>{children}</p>;
 };
 
-export const UL = ({ children }) => {
-  return <ul className="my-6 ml-6 list-disc [&>li]:mt-2">{children}</ul>;
-};
-
-export const LI = ({ children }) => {
-  return <li>{children}</li>;
-};
-
-export const BLOCKQUOTE = ({ children }) => {
+export const UL = ({ children, className }) => {
   return (
-    <blockquote className="mt-6 border-l-2 pl-6 italic">{children}</blockquote>
+    <ul className={cn("my-6 ml-6 list-disc [&>li]:mt-2", className)}>
+      {children}
+    </ul>
+  );
+};
+
+export const BLOCKQUOTE = ({ children, className }) => {
+  return (
+    <blockquote className={cn("mt-6 border-l-2 pl-6 italic", className)}>
+      {children}
+    </blockquote>
   );
 };
 

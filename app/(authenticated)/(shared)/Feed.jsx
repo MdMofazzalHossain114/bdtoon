@@ -1,25 +1,77 @@
 import IconButton from "@/components/shared/IconButton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import { H3, P } from "@/components/ui/typography";
-import { EllipsisVertical } from "lucide-react";
+import { Calendar, EllipsisVertical, Star, StarIcon } from "lucide-react";
 import Link from "next/link";
 
 const PostCard = () => {
   return (
-    <div className="w-full flex-col gap-y-4 p-4 rounded-lg bg-gray-900 max-w-[700px]">
+    <div className="w-full flex-col gap-y-4 p-4 rounded-lg bg-card max-w-[700px] border-2 border-muted text-foreground">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-x-4">
-          <Avatar className="w-12 h-12">
-            <AvatarImage src="https://github.com/shadcn.png" />
-            <AvatarFallback>CN</AvatarFallback>
-          </Avatar>
+          <HoverCard>
+            <HoverCardTrigger asChild>
+              <Avatar className="w-12 h-12 cursor-pointer">
+                <AvatarImage src="https://github.com/shadcn.png" />
+                <AvatarFallback>CN</AvatarFallback>
+              </Avatar>
+            </HoverCardTrigger>
+            <HoverCardContent className="w-fit p-4">
+              <div className="flex items-center gap-x-6">
+                <Avatar className="w-28 h-28">
+                  <AvatarImage src="https://github.com/shadcn.png" />
+                  <AvatarFallback>Md</AvatarFallback>
+                </Avatar>
+
+                <div>
+                  <h1 className="text-xl font-semibold">Md Mofazzal Hossain</h1>
+                  <Badge
+                    variant="outline"
+                    className="rounded-sm text-muted-foreground"
+                  >
+                    Motion Graphics
+                  </Badge>
+                  <div className="flex items-center gap-x-2 text-muted-foreground mt-4">
+                    <Calendar className="w-4 h-4" />
+                    Joined on 24 April 2023
+                  </div>
+                </div>
+                <div className="w-[1px] h-18 bg-muted rounded-full"></div>
+                <div className="flex flex-col gap-y-2 items-center">
+                  <P>Ratings</P>
+
+                  <div className="flex gap-x-2">
+                    <Star className="w-4 h-4" />
+                    <Star className="w-4 h-4" />
+                    <Star className="w-4 h-4" />
+                    <Star className="w-4 h-4" />
+                    <Star className="w-4 h-4" />
+                  </div>
+                </div>
+              </div>
+            </HoverCardContent>
+          </HoverCard>
           <div>
-            <Link href="#" className="hover:underline">
-              <h1 className="font-semibold">Md Mofazzal Hossain</h1>
+            <Link
+              href="#"
+              className="font-semibold cursor-pointer text-md hover:underline block"
+            >
+              Md Mofazzal Hossain
             </Link>
             <Link href="#" className="hover:underline">
-              <p className="text-sm opacity-70">Motion Graphics</p>
+              <Badge
+                variant="outline"
+                className="rounded-md text-muted-foreground hover:text-foreground"
+              >
+                Motion Graphics
+              </Badge>
             </Link>
           </div>
         </div>

@@ -4,7 +4,10 @@ const Label = ({ children, htmlFor = "", className }) => {
   return (
     <label
       htmlFor={htmlFor}
-      className={cn("text-sm text-gray-400 mb-2", className)}
+      className={cn(
+        "block text-sm font-medium text-foreground mb-2",
+        className
+      )}
     >
       {children}
     </label>

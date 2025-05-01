@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { signIn } from "next-auth/react";
 import { cn } from "@/lib/utils";
 import { H1 } from "@/components/ui/typography";
+import GradientCard from "../GradientCard";
 
 export default function OTPVerificationPage() {
   const router = useRouter();
@@ -144,58 +145,18 @@ export default function OTPVerificationPage() {
   };
 
   return (
-    <div className="flex min-h-screen bg-black">
+    <div className="flex min-h-screen bg-background">
       {/* Left Section */}
-      <div className="relative hidden w-1/2 p-8 lg:block">
-        <div className="h-full w-full overflow-hidden rounded-[40px] bg-gradient-to-b from-emerald-500 via-green-800 to-black">
-          <div className="flex h-full flex-col items-center justify-center px-8 text-center text-white">
-            <div className="mb-8">
-              <H1>BDTOON</H1>
-            </div>
-            <h2 className="mb-6 text-4xl font-bold">Verify Your Account</h2>
-            <p className="mb-12 text-lg">
-              We've sent a verification code to your email. Please enter it
-              below.
-            </p>
-
-            <div className="w-full max-w-sm space-y-4">
-              <div className="rounded-lg bg-white/5 p-4 backdrop-blur-sm">
-                <div className="flex items-center gap-4">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-white">
-                    1
-                  </span>
-                  <span className="text-lg">Sign up your account</span>
-                </div>
-              </div>
-              <div className="rounded-lg bg-white/10 p-4 backdrop-blur-sm">
-                <div className="flex items-center gap-4">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-black">
-                    2
-                  </span>
-                  <span className="text-lg">Verify your email</span>
-                </div>
-              </div>
-              <div className="rounded-lg bg-white/5 p-4 backdrop-blur-sm">
-                <div className="flex items-center gap-4">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-white">
-                    3
-                  </span>
-                  <span className="text-lg">Set up your profile</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <GradientCard step={2} />
 
       {/* Right Section */}
-      <div className="flex w-full items-center justify-center bg-black p-6 lg:w-1/2">
-        <div className="w-full max-w-md rounded-[40px] p-12">
-          <div className="mx-auto max-w-sm">
-            <h2 className="mb-2 text-3xl font-bold text-white">
+      <div className="flex w-full items-center justify-center bg-background p-6 lg:w-1/2">
+        <div className="max-w-[500px] w-full rounded-[40px] p-12">
+          <div className="mx-auto w-full">
+            <h2 className="mb-2 text-3xl font-bold text-foreground">
               Verification Code
             </h2>
-            <p className="mb-8 text-gray-400">
+            <p className="mb-8 text-muted-foreground">
               Enter the 6-digit code sent to your email address.
             </p>
 
@@ -213,20 +174,20 @@ export default function OTPVerificationPage() {
                     onKeyDown={(e) => handleKeyDown(index, e)}
                     onPaste={index === 0 ? handlePaste : undefined}
                     className={cn(
-                      "h-16 w-12 rounded-lg border border-gray-800 bg-gray-900 text-center text-xl text-white focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500 md:h-20 md:w-14",
-                      error && "border-red-500"
+                      "h-16 w-12 rounded-lg border border-muted bg-secondary text-center text-xl text-foreground focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 md:h-20 md:w-14 font-medium",
+                      error && "border-destructive"
                     )}
                     autoFocus={index === 0}
                   />
                 ))}
               </div>
-              <p className="mt-4 text-center text-sm text-gray-400">
+              <p className="mt-4 text-center text-sm text-muted-foreground">
                 Didn't receive the code?{" "}
                 {isResendActive ? (
                   <button
                     type="button"
                     onClick={handleResend}
-                    className="text-purple-400 hover:text-purple-300"
+                    className="text-foreground cursor-pointer"
                   >
                     Resend Code
                   </button>
@@ -240,14 +201,17 @@ export default function OTPVerificationPage() {
               type="submit"
               onClick={handleVerify}
               disabled={otp.join("").length !== 6 || isSubmitting}
-              className="h-12 w-full bg-white text-black hover:bg-gray-100 disabled:bg-gray-600 disabled:text-gray-300"
+              className="h-12 w-full"
             >
               {isSubmitting ? "Verifying..." : "Verify"}
             </Button>
 
-            <p className="mt-6 text-center text-sm text-gray-400">
+            <p className="mt-6 text-center text-sm text-muted-foreground">
               Wrong email address?{" "}
-              <a href="/register" className="text-white hover:underline">
+              <a
+                href="/register"
+                className="text-foreground hover:underline font-medium"
+              >
                 Go back
               </a>
             </p>

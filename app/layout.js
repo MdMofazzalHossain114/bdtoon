@@ -3,6 +3,8 @@ import "./globals.css";
 import AuthProvider from "@/components/AuthProvider";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ThemeProvider } from "@/components/theme-provider";
+import { ModeToggle } from "@/components/togge-theme";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,17 +23,25 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <AuthProvider>
-        <TooltipProvider>
-          <body
-            className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-white w-screen h-screen`}
+    <html lang="en" suppressHydrationWarning>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-white w-screen h-screen transition-all`}
+      >
+        <AuthProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
           >
-            {children}
-            <Toaster richColors />
-          </body>
-        </TooltipProvider>
-      </AuthProvider>
+            <TooltipProvider>
+              <ModeToggle />
+              {children}
+              <Toaster richColors />
+            </TooltipProvider>
+          </ThemeProvider>
+        </AuthProvider>
+      </body>
     </html>
   );
 }

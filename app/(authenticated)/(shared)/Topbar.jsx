@@ -11,7 +11,7 @@ const Topbar = () => {
   };
 
   return (
-    <nav className="absolute top-0 left-0 w-full flex items-center justify-center p-4 bg-gray-900 shadow-md shadow-white/5">
+    <nav className="absolute top-0 left-0 w-full flex items-center justify-center p-4 bg-card border-b-2 border-muted shadow-md z-18">
       <div className="w-full max-w-[1800px] flex items-center justify-between gap-x-4">
         {/* Left Section */}
         <div className="w-1/5 flex justify-center items-center">

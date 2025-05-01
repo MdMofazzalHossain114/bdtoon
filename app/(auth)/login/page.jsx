@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/tooltip";
 import axios from "axios";
 import { H1 } from "@/components/ui/typography";
+import { ModeToggle } from "@/components/togge-theme";
 
 export default function SignUpPage() {
   const searchParams = useSearchParams();
@@ -117,7 +118,7 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="flex min-h-screen bg-black flex-row-reverse">
+    <div className="flex min-h-screen bg-background flex-row-reverse">
       {/* Left Section */}
       <div className="relative hidden w-1/2 p-8 lg:block">
         <div className="h-full w-full overflow-hidden rounded-[40px] bg-gradient-to-b from-emerald-500 via-green-800 to-black">
@@ -161,43 +162,48 @@ export default function SignUpPage() {
       </div>
 
       {/* Right Section */}
-      <div className="flex w-full items-center justify-center bg-black p-6 lg:w-1/2">
+      <div className="flex w-full items-center justify-center bg-background p-6 lg:w-1/2">
         <div className="w-full max-w-md rounded-[40px] p-12">
           <div className="mx-auto max-w-sm">
-            <h2 className="mb-2 text-3xl font-bold text-white">
+            <h2 className="mb-2 text-3xl font-bold text-foreground">
               Log In Account
             </h2>
-            <p className="mb-8 text-gray-400">
+            <p className="mb-8 text-muted-foreground">
               Enter your credentials to log into your account.
             </p>
 
             <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
               <div className="space-y-2">
-                <Label htmlFor="identifier">Email Address or Username</Label>
+                <Label htmlFor="identifier">Username/Email Address</Label>
                 <div className="relative">
                   <Input
                     disabled={submitting}
                     id="identifier"
-                    className="h-12 border-gray-800 bg-gray-900 text-white placeholder:text-gray-400"
+                    className={
+                      errors.identifier && "border-destructive border-2"
+                    }
                     placeholder="mofazzal@gmail.com"
                     type="text"
                     {...register("identifier")}
                   />
                   {errors.identifier && (
                     <>
-                      <div className="absolute right-2 top-3 text-red-500">
+                      <div className="absolute right-2 top-3 text-destructive">
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <InfoIcon />
                           </TooltipTrigger>
-                          <TooltipContent>
-                            <p className="text-sm text-center">
-                              Username must be 3–20 characters,
-                              <br /> start with a letter, and only contain
-                              letters,
-                              <br /> numbers, or dots (no double dots or special
-                              characters). <br /> Or use a valid email address.
-                            </p>
+                          <TooltipContent className="bg-foreground text-background border-1 border-muted p-4">
+                            <ul className="space-y-2">
+                              <li>Username must be 3–20 characters</li>
+                              <li>
+                                Username must start with a letter and only
+                              </li>
+                              <li>
+                                Username must contain letters, numbers or dots
+                              </li>
+                              <li>Or use a valid email address.</li>
+                            </ul>
                           </TooltipContent>
                         </Tooltip>
                       </div>
@@ -207,12 +213,12 @@ export default function SignUpPage() {
                 </div>
               </div>
 
-              <div className="space-y-2">
+              <div>
                 <Label htmlFor="password">Password</Label>
                 <Input
                   disabled={submitting}
                   id="password"
-                  className="h-12 border-gray-800 bg-gray-900 text-white placeholder:text-gray-400"
+                  className={errors.password && "border-destructive border-2"}
                   placeholder="*******"
                   type="password"
                   {...register("password")}
@@ -221,7 +227,7 @@ export default function SignUpPage() {
                 {errors.password ? (
                   <ErrorMessage>{errors.password.message}</ErrorMessage>
                 ) : (
-                  <p className="text-sm text-gray-400">
+                  <p className="text-sm text-muted-foreground">
                     Must be at least 6 characters.
                   </p>
                 )}
@@ -236,17 +242,20 @@ export default function SignUpPage() {
               <Button
                 type="submit"
                 disabled={submitting}
-                className={`h-12 w-full bg-white text-black hover:bg-gray-100 ${
+                className={`h-12 w-full ${
                   submitting &&
-                  "disabled:cursor-not-allowed disabled:bg-gray-700 disabled:text-gray-400"
+                  "disabled:cursor-not-allowed disabled:text-muted-foreground"
                 }`}
               >
                 {submitting ? "Logging In..." : "Log In"}
               </Button>
 
-              <p className="text-center text-sm text-gray-400">
+              <p className="text-center text-sm text-foreground">
                 Don't have an account?{" "}
-                <a href="/register" className="text-white hover:underline">
+                <a
+                  href="/register"
+                  className="text-foreground font-medium hover:underline mx-2"
+                >
                   Create an account
                 </a>
               </p>

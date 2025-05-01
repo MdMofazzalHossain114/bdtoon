@@ -71,7 +71,6 @@ const RegistrationForm = () => {
             <Input
               disabled={isSubmitting}
               id="firstname"
-              className="h-12 border-gray-800 bg-gray-900 text-white placeholder:text-gray-400"
               placeholder="i.e. Mohammad"
               type="text"
               {...register("firstname")}
@@ -85,7 +84,6 @@ const RegistrationForm = () => {
             <Input
               disabled={isSubmitting}
               id="lastname"
-              className="h-12 border-gray-800 bg-gray-900 text-white placeholder:text-gray-400"
               placeholder="i.e. Hossain"
               type="text"
               {...register("lastname")}
@@ -101,7 +99,6 @@ const RegistrationForm = () => {
           <Input
             disabled={isSubmitting}
             id="username"
-            className="h-12 border-gray-800 bg-gray-900 text-white placeholder:text-gray-400"
             placeholder="i.e. mohammad"
             type="text"
             {...register("username")}
@@ -115,7 +112,6 @@ const RegistrationForm = () => {
           <Input
             disabled={isSubmitting}
             id="email"
-            className="h-12 border-gray-800 bg-gray-900 text-white placeholder:text-gray-400"
             placeholder="i.e. mohammad@gmail.com"
             type="email"
             {...register("email")}
@@ -129,7 +125,6 @@ const RegistrationForm = () => {
             <Input
               disabled={isSubmitting}
               id="password"
-              className="h-12 border-gray-800 bg-gray-900 text-white placeholder:text-gray-400"
               placeholder="******"
               type={showPassword ? "text" : "password"}
               {...register("password")}
@@ -140,7 +135,7 @@ const RegistrationForm = () => {
               size="icon"
               tabIndex="-1"
               onClick={() => setShowPassword(!showPassword)}
-              className={cn("absolute right-2 top-1 text-white")}
+              className={cn("absolute right-2 top-1 text-foreground")}
             >
               {showPassword ? <EyeOffIcon /> : <EyeIcon />}
             </Button>
@@ -148,7 +143,7 @@ const RegistrationForm = () => {
           {errors.password ? (
             <ErrorMessage>{errors.password.message}</ErrorMessage>
           ) : (
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-muted-foreground">
               Must be at least 8 characters.
             </p>
           )}
@@ -159,7 +154,6 @@ const RegistrationForm = () => {
             <Input
               disabled={isSubmitting}
               id="confirmPassword"
-              className="h-12 border-gray-800 bg-gray-900 text-white placeholder:text-gray-400"
               placeholder="******"
               type={showConfirmPassword ? "text" : "password"}
               {...register("confirmPassword")}
@@ -170,7 +164,7 @@ const RegistrationForm = () => {
               size="icon"
               tabIndex="-1"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className={cn("absolute right-2 top-1 text-white")}
+              className={cn("absolute right-2 top-1 text-foreground")}
             >
               {showPassword ? <EyeOffIcon /> : <EyeIcon />}
             </Button>
@@ -178,22 +172,22 @@ const RegistrationForm = () => {
           {errors.confirmPassword ? (
             <ErrorMessage>{errors.confirmPassword.message}</ErrorMessage>
           ) : (
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-muted-foreground">
               Should match the password above.
             </p>
           )}
         </div>
 
-        <Button
-          disabled={isSubmitting}
-          className="h-12 w-full bg-white text-black hover:bg-gray-100"
-        >
+        <Button disabled={isSubmitting} className="h-12 w-full">
           {isSubmitting ? "Creating..." : "Create account"}
         </Button>
 
-        <p className="text-center text-sm text-gray-400">
+        <p className="text-center text-sm text-foreground">
           Already have an account?{" "}
-          <Link className="text-white hover:underline" href="/login">
+          <Link
+            className="mx-2 font-medium hover:underline text-foreground"
+            href="/login"
+          >
             Log in
           </Link>
         </p>
