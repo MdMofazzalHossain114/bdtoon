@@ -20,6 +20,8 @@ export default function ProfileSetupPage() {
   const router = useRouter();
   const { data: session, update } = useSession();
 
+  const [displayName, setDisplayName] = useState("");
+
   const {
     register,
     handleSubmit,
@@ -28,8 +30,6 @@ export default function ProfileSetupPage() {
   } = useForm({
     resolver: zodResolver(profileSchema),
   });
-
-  console.log(session);
 
   const [profileImage, setProfileImage] = useState(null);
   const profileRef = useRef(null);
@@ -42,6 +42,8 @@ export default function ProfileSetupPage() {
       try {
         const res = await axios.get(`/api/users/${session.user.id}`);
         console.log("getting user ", res.data);
+
+        setValue("displayName", res.data.user.firstname);
       } catch (error) {
         console.log(error);
       }
@@ -70,49 +72,54 @@ export default function ProfileSetupPage() {
     coverRef.current?.click();
   };
 
-  const onSubmit = async (e) => {
-    e.preventDefault();
-    setSubmitting(true);
+  const onSubmit = async (data) => {
+    let formData = new FormData();
 
-    if (!profileRef.current?.files?.[0]) return;
-
-    const file = profileRef.current.files[0];
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      const res = await axios.post(
-        `/api/users/${session.user.id}/setup-your-profile`,
-        formData
-      );
-      console.log(res);
-
-      if (!res.data.success) {
-        console.log("Failed to upload profile picture");
-        toast.error(res.data.message);
-      } else {
-        await update({
-          ...session,
-          profilePicture: res.data.url,
-          role: "user",
-        });
-
-        console.log("Successfully uploaded profile picture");
-        toast.success("Successfully set up your profile");
-
-        router.push("/");
-      }
-    } catch (error) {
-      console.error("Error uploading image:", error);
-      toast.error("Failed setting up your profile");
+    if (profileRef.current?.files?.[0]) {
+      const file = profileRef.current.files[0];
+      formData.append("file", file);
     }
 
-    setSubmitting(false);
+    formData.append("displayName", data.displayName);
+    formData.append("bio", data.bio);
+
+    for (let [key, value] of formData.entries()) {
+      console.log(key, value);
+    }
+
+    const updateProfile = async () => {
+      try {
+        const res = await axios.post(
+          `/api/users/${session.user.id}/setup-your-profile`,
+          formData
+        );
+        console.log(res);
+
+        if (!res.data.success) {
+          console.log("Failed to upload profile picture");
+          toast.error(res.data.message);
+        } else {
+          await update({
+            ...session,
+            profilePicture: res.data.url,
+            role: "user",
+          });
+
+          console.log("Successfully uploaded profile picture");
+          toast.success("Successfully set up your profile");
+
+          router.push("/");
+        }
+      } catch (error) {
+        console.error("Error uploading image:", error);
+        toast.error("Failed setting up your profile");
+      }
+    };
+
+    await updateProfile();
   };
 
   const handleSkip = async () => {
-    setSubmitting(true);
-
     console.log("Skipping profile setup");
 
     try {
@@ -130,23 +137,19 @@ export default function ProfileSetupPage() {
       console.log(error);
       toast.error("Failed skipping profile setup");
     }
-
-    setSubmitting(false);
   };
 
   return (
-    <div className="flex min-h-screen bg-black">
+    <div className="flex min-h-screen text-foreground bg-background">
       {/* Left Section */}
       <GradientCard />
 
       {/* Right Section */}
-      <div className="flex w-full items-center justify-center bg-black p-6 lg:w-1/2">
+      <div className="flex w-full items-center justify-center text-foreground bg-background p-6 lg:w-1/2">
         <div className="w-full max-w-md rounded-[40px] p-12">
           <div className="mx-auto max-w-sm">
-            <h2 className="mb-2 text-3xl font-bold text-white">
-              Profile Setup
-            </h2>
-            <p className="mb-8 text-gray-400">
+            <h2 className="mb-2 text-3xl font-bold">Profile Setup</h2>
+            <p className="mb-8 text-muted-foreground">
               Complete your profile to get the most out of our platform.
             </p>
 
@@ -167,7 +170,7 @@ export default function ProfileSetupPage() {
                 <div className="flex flex-col items-center absolute top-1/2">
                   <div
                     onClick={triggerProfileInput}
-                    className="group relative mb-4 h-24 w-24 cursor-pointer overflow-hidden rounded-full border-2 border-dashed border-gray-600 bg-gray-900 transition-all hover:border-purple-500"
+                    className="group relative mb-4 h-24 w-24 cursor-pointer overflow-hidden rounded-full border-3 border-dashed border-muted-foreground bg-foreground/5 transition-all hover:border-green-500"
                   >
                     {profileImage ? (
                       <img
@@ -177,11 +180,11 @@ export default function ProfileSetupPage() {
                       />
                     ) : (
                       <div className="flex h-full w-full items-center justify-center">
-                        <Camera className="h-8 w-8 text-gray-400 group-hover:text-purple-400" />
+                        <Camera className="h-8 w-8 text-muted-foreground group-hover:text-muted-foreground" />
                       </div>
                     )}
-                    <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 transition-opacity group-hover:opacity-100">
-                      <Upload className="h-6 w-6 text-white" />
+                    <div className="absolute inset-0 flex items-center justify-center text-muted-foreground bg-background bg-opacity-50 opacity-0 transition-opacity group-hover:opacity-100">
+                      <Upload className="h-6 w-6" />
                     </div>
                   </div>
                   <input
@@ -192,57 +195,57 @@ export default function ProfileSetupPage() {
                     accept="image/*"
                     className="hidden"
                   />
-                  <p className="text-sm text-gray-400">
-                    Upload profile picture
-                  </p>
+                  <p className="font-medium">Upload profile picture</p>
                 </div>
               </div>
 
               {/* Personal Information */}
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <label
-                    htmlFor="displayName"
-                    className="text-sm text-gray-400"
-                  >
+                  <label htmlFor="displayName" className="text-sm font-medium">
                     Display Name
                   </label>
                   <Input
                     disabled={isSubmitting}
                     id="displayName"
-                    className="h-12 border-gray-800 bg-gray-900 text-white placeholder:text-gray-400"
                     placeholder="johndoe"
                     type="text"
+                    {...register("displayName")}
                   />
                   {errors.displayName ? (
                     <ErrorMessage>{errors.displayName.message}</ErrorMessage>
                   ) : (
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-muted-foreground">
                       This will be visible to other users.
                     </p>
                   )}
                 </div>
 
                 <div className="space-y-2">
-                  <label htmlFor="bio" className="text-sm text-gray-400">
+                  <label htmlFor="bio" className="text-sm font-medium">
                     Bio
                   </label>
                   <Textarea
                     disabled={isSubmitting}
                     id="bio"
-                    className="min-h-[100px] border-gray-800 bg-gray-900 text-white placeholder:text-gray-400"
+                    className="max-h-[200px] min-h-[100px]"
                     placeholder="Tell us a bit about yourself..."
+                    {...register("bio")}
+                    maxLength={500}
                   />
+                  {errors.bio && (
+                    <ErrorMessage>{errors.bio.message}</ErrorMessage>
+                  )}
                 </div>
               </div>
 
               {/* Preferences */}
-              <div className="space-y-4 rounded-lg border border-gray-800 bg-gray-900/50 p-4">
-                <h3 className="text-lg font-medium text-white">Preferences</h3>
+              <div className="space-y-4 rounded-lg border p-4 text-foreground">
+                <h3 className="text-lg font-bold">Preferences</h3>
                 <div className="flex items-center justify-between">
                   <label
                     htmlFor="emailNotifications"
-                    className="text-sm text-gray-400"
+                    className="text-sm text-muted-foreground font-medium"
                   >
                     Email Notifications
                   </label>
@@ -254,11 +257,14 @@ export default function ProfileSetupPage() {
                       className="peer sr-only"
                       defaultChecked
                     />
-                    <div className="peer h-6 w-11 rounded-full bg-gray-700 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-purple-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none"></div>
+                    <div className="peer h-6 w-11 rounded-full bg-foreground/30 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-green-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none"></div>
                   </label>
                 </div>
                 <div className="flex items-center justify-between">
-                  <label htmlFor="darkMode" className="text-sm text-gray-400">
+                  <label
+                    htmlFor="darkMode"
+                    className="text-sm text-muted-foreground font-medium"
+                  >
                     Dark Mode
                   </label>
                   <label className="relative inline-flex cursor-pointer items-center">
@@ -269,7 +275,7 @@ export default function ProfileSetupPage() {
                       className="peer sr-only"
                       defaultChecked
                     />
-                    <div className="peer h-6 w-11 rounded-full bg-gray-700 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-purple-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none"></div>
+                    <div className="peer h-6 w-11 rounded-full bg-foreground/30 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-green-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none"></div>
                   </label>
                 </div>
               </div>
@@ -277,11 +283,11 @@ export default function ProfileSetupPage() {
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="h-12 w-full bg-white text-black hover:bg-gray-100"
+                className="h-12 w-full"
               >
                 {isSubmitting ? (
                   <>
-                    <Loader2 className="h-10 w-10 animate-spin text-blue-500" />
+                    <Loader2 className="h-10 w-10 animate-spin" />
                     Completing setup...
                   </>
                 ) : (
@@ -293,12 +299,12 @@ export default function ProfileSetupPage() {
                 onClick={handleSkip}
                 disabled={isSubmitting}
                 variant="link"
-                className="text-white w-full"
+                className="w-full"
               >
                 Skip for now
               </Button>
 
-              <p className="text-center text-sm text-gray-400">
+              <p className="text-center text-sm text-muted-foreground">
                 You can update these details later in your account settings.
               </p>
             </form>

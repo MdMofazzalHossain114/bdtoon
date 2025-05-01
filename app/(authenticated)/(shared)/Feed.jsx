@@ -2,18 +2,28 @@ import IconButton from "@/components/shared/IconButton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import FormSeperator from "@/components/ui/form-seperator";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
+import { Separator } from "@/components/ui/separator";
 import { H3, P } from "@/components/ui/typography";
-import { Calendar, EllipsisVertical, Star, StarIcon } from "lucide-react";
+import {
+  Calendar,
+  EllipsisVertical,
+  Heart,
+  MessageCircle,
+  Share2,
+  Star,
+  StarIcon,
+} from "lucide-react";
 import Link from "next/link";
 
 const PostCard = () => {
   return (
-    <div className="w-full flex-col gap-y-4 p-4 rounded-lg bg-card max-w-[700px] border-2 border-muted text-foreground">
+    <div className="w-full flex-col gap-y-4 p-4 rounded-lg bg-card max-w-[700px] border-2 border-muted-foreground/30 text-foreground">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-x-4">
           <HoverCard>
@@ -84,21 +94,21 @@ const PostCard = () => {
         <P>
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque,
           earum! Dolores debitis recusandae velit saepe dolorem odit maiores
-          possimus iste numquam alias non, quas at fugit vel, nulla corporis.
-          Earum. Esse iure similique architecto ullam qui laboriosam sit earum
-          velit nemo at dolores expedita error adipisci amet inventore ex magni
-          nesciunt beatae quo animi, atque blanditiis saepe. Rerum, harum quam.
+          possimus iste numquam alias non, quas at fugit vel,
         </P>
       </div>
-
+      <Separator className="my-2" />
       <div className="w-full flex items-center justify-between">
         <Button variant="ghost" className="w-1/3">
+          <Heart />
           Like
         </Button>
         <Button variant="ghost" className="w-1/3">
+          <MessageCircle />
           Comment
         </Button>
         <Button variant="ghost" className="w-1/3">
+          <Share2 />
           Share
         </Button>
       </div>

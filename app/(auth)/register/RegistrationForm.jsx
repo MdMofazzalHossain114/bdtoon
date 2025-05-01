@@ -13,7 +13,7 @@ import FormSeperator from "@/components/ui/form-seperator";
 import { toast } from "sonner";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import Label from "../Label";
+import Label from "../../../components/shared/Label";
 
 const RegistrationForm = () => {
   const router = useRouter();

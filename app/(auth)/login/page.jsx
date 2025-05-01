@@ -11,7 +11,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import ErrorMessage from "../../../components/shared/ErrorMessage";
-import Label from "../Label";
+import Label from "../../../components/shared/Label";
 import {
   Tooltip,
   TooltipContent,
