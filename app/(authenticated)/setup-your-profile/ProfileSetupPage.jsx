@@ -10,12 +10,24 @@ import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { H1 } from "@/components/ui/typography";
+import GradientCard from "@/app/(auth)/GradientCard";
+import { useForm } from "react-hook-form";
+import { profileSchema } from "@/lib/schema/profileSetup";
+import { zodResolver } from "@hookform/resolvers/zod";
+import ErrorMessage from "@/components/shared/ErrorMessage";
 
 export default function ProfileSetupPage() {
   const router = useRouter();
   const { data: session, update } = useSession();
 
-  const [submitting, setSubmitting] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors, isSubmitting, isValid },
+  } = useForm({
+    resolver: zodResolver(profileSchema),
+  });
 
   console.log(session);
 
@@ -58,7 +70,7 @@ export default function ProfileSetupPage() {
     coverRef.current?.click();
   };
 
-  const handleSubmit = async (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
 
@@ -125,46 +137,7 @@ export default function ProfileSetupPage() {
   return (
     <div className="flex min-h-screen bg-black">
       {/* Left Section */}
-      <div className="relative hidden w-1/2 p-8 lg:block">
-        <div className="h-full w-full overflow-hidden rounded-[40px] bg-gradient-to-b from-emerald-500 via-green-800 to-black">
-          <div className="flex h-full flex-col items-center justify-center px-8 text-center text-white">
-            <div className="mb-8">
-              <H1>BDTOON</H1>
-            </div>
-            <h2 className="mb-6 text-4xl font-bold">Complete Your Profile</h2>
-            <p className="mb-12 text-lg">
-              Tell us a bit about yourself to personalize your experience.
-            </p>
-
-            <div className="w-full max-w-sm space-y-4">
-              <div className="rounded-lg bg-white/5 p-4 backdrop-blur-sm">
-                <div className="flex items-center gap-4">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-white">
-                    1
-                  </span>
-                  <span className="text-lg">Sign up your account</span>
-                </div>
-              </div>
-              <div className="rounded-lg bg-white/5 p-4 backdrop-blur-sm">
-                <div className="flex items-center gap-4">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-white">
-                    2
-                  </span>
-                  <span className="text-lg">Verify your email</span>
-                </div>
-              </div>
-              <div className="rounded-lg bg-white/10 p-4 backdrop-blur-sm">
-                <div className="flex items-center gap-4">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-black">
-                    3
-                  </span>
-                  <span className="text-lg">Set up your profile</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <GradientCard />
 
       {/* Right Section */}
       <div className="flex w-full items-center justify-center bg-black p-6 lg:w-1/2">
@@ -177,7 +150,7 @@ export default function ProfileSetupPage() {
               Complete your profile to get the most out of our platform.
             </p>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               {/* Profile Image Upload */}
               <div className="flex flex-col items-center relative mb-[150px]">
                 {/* Cover Photo */}
@@ -212,7 +185,7 @@ export default function ProfileSetupPage() {
                     </div>
                   </div>
                   <input
-                    disabled={submitting}
+                    disabled={isSubmitting}
                     type="file"
                     ref={profileRef}
                     onChange={handleImageUpload}
@@ -235,15 +208,19 @@ export default function ProfileSetupPage() {
                     Display Name
                   </label>
                   <Input
-                    disabled={submitting}
+                    disabled={isSubmitting}
                     id="displayName"
                     className="h-12 border-gray-800 bg-gray-900 text-white placeholder:text-gray-400"
                     placeholder="johndoe"
                     type="text"
                   />
-                  <p className="text-xs text-gray-500">
-                    This will be visible to other users.
-                  </p>
+                  {errors.displayName ? (
+                    <ErrorMessage>{errors.displayName.message}</ErrorMessage>
+                  ) : (
+                    <p className="text-xs text-gray-500">
+                      This will be visible to other users.
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -251,7 +228,7 @@ export default function ProfileSetupPage() {
                     Bio
                   </label>
                   <Textarea
-                    disabled={submitting}
+                    disabled={isSubmitting}
                     id="bio"
                     className="min-h-[100px] border-gray-800 bg-gray-900 text-white placeholder:text-gray-400"
                     placeholder="Tell us a bit about yourself..."
@@ -271,7 +248,7 @@ export default function ProfileSetupPage() {
                   </label>
                   <label className="relative inline-flex cursor-pointer items-center">
                     <input
-                      disabled={submitting}
+                      disabled={isSubmitting}
                       type="checkbox"
                       id="emailNotifications"
                       className="peer sr-only"
@@ -286,7 +263,7 @@ export default function ProfileSetupPage() {
                   </label>
                   <label className="relative inline-flex cursor-pointer items-center">
                     <input
-                      disabled={submitting}
+                      disabled={isSubmitting}
                       type="checkbox"
                       id="darkMode"
                       className="peer sr-only"
@@ -299,10 +276,10 @@ export default function ProfileSetupPage() {
 
               <Button
                 type="submit"
-                disabled={submitting}
+                disabled={isSubmitting}
                 className="h-12 w-full bg-white text-black hover:bg-gray-100"
               >
-                {submitting ? (
+                {isSubmitting ? (
                   <>
                     <Loader2 className="h-10 w-10 animate-spin text-blue-500" />
                     Completing setup...
@@ -314,7 +291,7 @@ export default function ProfileSetupPage() {
               </Button>
               <Button
                 onClick={handleSkip}
-                disabled={submitting}
+                disabled={isSubmitting}
                 variant="link"
                 className="text-white w-full"
               >

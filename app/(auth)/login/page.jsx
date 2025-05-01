@@ -10,7 +10,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import ErrorMessage from "../ErrorMessage";
+import ErrorMessage from "../../../components/shared/ErrorMessage";
 import Label from "../Label";
 import {
   Tooltip,
@@ -32,11 +32,10 @@ export default function SignUpPage() {
   console.log(session);
 
   const router = useRouter();
-  const [submitting, setSubmitting] = useState(false);
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
     setError,
   } = useForm({
     resolver: zodResolver(loginSchema),
@@ -46,7 +45,6 @@ export default function SignUpPage() {
 
   useEffect(() => {
     const proceedLogin = async () => {
-      setSubmitting(true);
       try {
         const res = await signIn("credential", {
           redirect: false,
@@ -60,8 +58,6 @@ export default function SignUpPage() {
         console.log("Error Logging in after verification", error);
         toast.error("Error logging in after verification");
       }
-
-      setSubmitting(false);
     };
 
     if (isVerification) {
@@ -70,7 +66,6 @@ export default function SignUpPage() {
   }, [isVerification, username, password]);
 
   const onSubmit = async (data) => {
-    setSubmitting(true);
     setAuthError("");
 
     try {
@@ -113,8 +108,6 @@ export default function SignUpPage() {
         toast.error("Something went wrong", { position: "top-center" });
       }
     }
-
-    setSubmitting(false);
   };
 
   return (
@@ -177,7 +170,7 @@ export default function SignUpPage() {
                 <Label htmlFor="identifier">Username/Email Address</Label>
                 <div className="relative">
                   <Input
-                    disabled={submitting}
+                    disabled={isSubmitting}
                     id="identifier"
                     className={
                       errors.identifier && "border-destructive border-2"
@@ -216,7 +209,7 @@ export default function SignUpPage() {
               <div>
                 <Label htmlFor="password">Password</Label>
                 <Input
-                  disabled={submitting}
+                  disabled={isSubmitting}
                   id="password"
                   className={errors.password && "border-destructive border-2"}
                   placeholder="*******"
@@ -241,13 +234,13 @@ export default function SignUpPage() {
 
               <Button
                 type="submit"
-                disabled={submitting}
+                disabled={isSubmitting}
                 className={`h-12 w-full ${
-                  submitting &&
+                  isSubmitting &&
                   "disabled:cursor-not-allowed disabled:text-muted-foreground"
                 }`}
               >
-                {submitting ? "Logging In..." : "Log In"}
+                {isSubmitting ? "Logging In..." : "Log In"}
               </Button>
 
               <p className="text-center text-sm text-foreground">

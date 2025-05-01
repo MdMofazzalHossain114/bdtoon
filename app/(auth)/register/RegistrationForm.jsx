@@ -5,7 +5,7 @@ import { signUpSchema } from "@/lib/schema/signUpSchema";
 import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import ErrorMessage from "../ErrorMessage";
+import ErrorMessage from "../../../components/shared/ErrorMessage";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
