@@ -20,16 +20,25 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { User } from "lucide-react";
 
 export function AppSidebar() {
   return (
-    <Sidebar>
+    <Sidebar collapsible="icon">
       <SidebarHeader></SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Dashboard</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
+              <SidebarMenuItem href="#">
+                <SidebarMenuButton className="px-4 py-6" asChild>
+                  <Link href="#">
+                    <User />
+                    Md Mofazzal Hossain
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
               {items.map((item) => (
                 <SidebarMenuItem key={item.title} href={item.url}>
                   <SidebarMenuButton className="px-4 py-6" asChild>

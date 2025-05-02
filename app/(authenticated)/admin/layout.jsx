@@ -11,14 +11,7 @@ const layout = async ({ children }) => {
     redirect("/");
   }
 
-  return (
-    <SidebarProvider>
-      <AppSidebar>
-        <SidebarTrigger />
-        {children}
-      </AppSidebar>
-    </SidebarProvider>
-  );
+  return <AppSidebar>{children}</AppSidebar>;
 };
 
 export default layout;

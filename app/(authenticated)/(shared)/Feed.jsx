@@ -23,7 +23,7 @@ import Link from "next/link";
 
 const PostCard = () => {
   return (
-    <div className="w-full flex-col gap-y-4 p-4 rounded-lg bg-card max-w-[700px] border-2 border-muted-foreground/30 text-foreground">
+    <div className="w-full flex-col gap-y-4 px-4 pt-4 pb-2 rounded-lg bg-card max-w-[700px] border border-muted-foreground/30 text-foreground shadow-lg dark:shadow-foreground/10">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-x-4">
           <HoverCard>
