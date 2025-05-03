@@ -20,6 +20,7 @@ import {
 import axios from "axios";
 import { H1 } from "@/components/ui/typography";
 import { ModeToggle } from "@/components/togge-theme";
+import FullScreenLoading from "@/components/shared/FullScreenLoading";
 
 export default function SignUpPage() {
   const searchParams = useSearchParams();
@@ -41,10 +42,13 @@ export default function SignUpPage() {
     resolver: zodResolver(loginSchema),
   });
 
+  const [loading, setLoading] = useState(false);
+
   const [authError, setAuthError] = useState("");
 
   useEffect(() => {
     const proceedLogin = async () => {
+      setLoading(true);
       try {
         const res = await signIn("credential", {
           redirect: false,
@@ -58,6 +62,7 @@ export default function SignUpPage() {
         console.log("Error Logging in after verification", error);
         toast.error("Error logging in after verification");
       }
+      setLoading(false);
     };
 
     if (isVerification) {
@@ -109,9 +114,9 @@ export default function SignUpPage() {
       }
     }
   };
-
   return (
     <div className="flex min-h-screen bg-background flex-row-reverse">
+      {loading && <FullScreenLoading label="Authenticating..." />}
       {/* Left Section */}
       <div className="relative hidden w-1/2 p-8 lg:block">
         <div className="h-full w-full overflow-hidden rounded-[40px] bg-gradient-to-b from-emerald-500 via-green-800 to-black">

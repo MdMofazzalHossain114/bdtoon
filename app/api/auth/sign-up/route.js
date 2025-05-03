@@ -110,7 +110,7 @@ export async function POST(request) {
     // send verification email
     const subject = "BDTOON Account Verification";
     const html = VerificationEmail({ username, code });
-
+    // Send email
     // const emailResponse = await sendEmail({ to: email, subject, html });
 
     // if (!emailResponse.success) {

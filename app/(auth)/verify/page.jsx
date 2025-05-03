@@ -17,6 +17,7 @@ export default function OTPVerificationPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  const [canSubmit, setCanSubmit] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
 
@@ -124,6 +125,7 @@ export default function OTPVerificationPage() {
           encryptedUserId: searchParams.get("q"),
           encryptedPassword: searchParams.get("p"),
         });
+        setCanSubmit(true);
         toast.success("Account created successfully");
 
         console.log("Response from verify API", res.data);
@@ -186,6 +188,7 @@ export default function OTPVerificationPage() {
                 {isResendActive ? (
                   <button
                     type="button"
+                    disabled={isSubmitting || canSubmit}
                     onClick={handleResend}
                     className="text-foreground cursor-pointer"
                   >
@@ -200,7 +203,7 @@ export default function OTPVerificationPage() {
             <Button
               type="submit"
               onClick={handleVerify}
-              disabled={otp.join("").length !== 6 || isSubmitting}
+              disabled={otp.join("").length !== 6 || isSubmitting || !canSubmit}
               className="h-12 w-full"
             >
               {isSubmitting ? "Verifying..." : "Verify"}

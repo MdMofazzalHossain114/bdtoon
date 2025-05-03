@@ -14,6 +14,9 @@ const page = async () => {
   if (user && user.role === "guest") {
     redirect("/setup-your-profile");
   }
+  if (user && user.role === "admin") {
+    redirect("/admin/dashboard");
+  }
 
   return (
     <div className="w-full h-full flex pt-[76px] bg-background">
