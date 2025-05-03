@@ -111,11 +111,11 @@ export async function POST(request) {
     const subject = "BDTOON Account Verification";
     const html = VerificationEmail({ username, code });
 
-    const emailResponse = await sendEmail({ to: email, subject, html });
+    // const emailResponse = await sendEmail({ to: email, subject, html });
 
-    if (!emailResponse.success) {
-      return sendErrorResponse(emailResponse.message, 500);
-    }
+    // if (!emailResponse.success) {
+    //   return sendErrorResponse(emailResponse.message, 500);
+    // }
 
     const encryptedPassword = await encrypt(password);
 

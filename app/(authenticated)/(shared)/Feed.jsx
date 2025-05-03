@@ -12,6 +12,7 @@ import { Separator } from "@/components/ui/separator";
 import { H3, P } from "@/components/ui/typography";
 import {
   Calendar,
+  Copy,
   EllipsisVertical,
   Heart,
   MessageCircle,
@@ -20,6 +21,32 @@ import {
   StarIcon,
 } from "lucide-react";
 import Link from "next/link";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const PostCard = () => {
   return (
@@ -85,9 +112,24 @@ const PostCard = () => {
             </Link>
           </div>
         </div>
-        <IconButton className="bg-transparent">
-          <EllipsisVertical />
-        </IconButton>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <IconButton className="bg-transparent">
+              <EllipsisVertical />
+            </IconButton>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-56">
+            <DropdownMenuLabel>Post Options</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              <DropdownMenuItem>View Full Post</DropdownMenuItem>
+              <DropdownMenuItem>Copy Link</DropdownMenuItem>
+              <DropdownMenuItem>Report</DropdownMenuItem>
+              <DropdownMenuItem>Hide</DropdownMenuItem>
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
       <div className="py-4">
         <H3>Post Title</H3>
@@ -107,10 +149,45 @@ const PostCard = () => {
           <MessageCircle />
           Comment
         </Button>
-        <Button variant="ghost" className="w-1/3">
-          <Share2 />
-          Share
-        </Button>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="ghost" className="w-1/3">
+              <Share2 />
+              Share
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Share link</DialogTitle>
+              <DialogDescription>
+                Anyone who has this link will be able to view this.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex items-center space-x-2">
+              <div className="grid flex-1 gap-2">
+                <Label htmlFor="link" className="sr-only">
+                  Link
+                </Label>
+                <Input
+                  id="link"
+                  defaultValue="https://ui.shadcn.com/docs/installation"
+                  readOnly
+                />
+              </div>
+              <Button type="submit" size="sm" className="px-3">
+                <span className="sr-only">Copy</span>
+                <Copy />
+              </Button>
+            </div>
+            <DialogFooter className="sm:justify-start">
+              <DialogClose asChild>
+                <Button type="button" variant="secondary">
+                  Close
+                </Button>
+              </DialogClose>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

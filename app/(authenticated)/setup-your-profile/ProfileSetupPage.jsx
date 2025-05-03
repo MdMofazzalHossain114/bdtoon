@@ -293,7 +293,6 @@ export default function ProfileSetupPage() {
                 ) : (
                   "Complete Setup"
                 )}
-                Complete Setup
               </Button>
               <Button
                 onClick={handleSkip}

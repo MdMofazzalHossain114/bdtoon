@@ -11,7 +11,14 @@ const layout = async ({ children }) => {
     redirect("/");
   }
 
-  return <AppSidebar>{children}</AppSidebar>;
+  return (
+    <div className="w-full h-full bg-background flex">
+      <div className="h-full w-3/12">
+        <LeftSidebar />
+      </div>
+      <div className="w-9/12">{children}</div>
+    </div>
+  );
 };
 
 export default layout;

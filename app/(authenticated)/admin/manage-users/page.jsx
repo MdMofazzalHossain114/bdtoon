@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import React from "react";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -11,55 +11,111 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-export default function UsersPage() {
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
+const userData = [
+  {
+    username: "user_anna01",
+    name: "Anna Thompson",
+    accountStatus: "active",
+    email: "anna01@example.com",
+    role: "user",
+  },
+  {
+    username: "cre8_ricky",
+    name: "Ricky Stone",
+    accountStatus: "pending",
+    email: "ricky.cre8@example.com",
+    role: "creator",
+  },
+  {
+    username: "client_rob",
+    name: "Robert Nolan",
+    accountStatus: "active",
+    email: "rob.client@example.com",
+    role: "client",
+  },
+  {
+    username: "user_junaid",
+    name: "Junaid Ahmed",
+    accountStatus: "banned",
+    email: "junaid01@example.com",
+    role: "user",
+  },
+  {
+    username: "creator_sumi",
+    name: "Sumaiya Khatun",
+    accountStatus: "active",
+    email: "sumi.creative@example.com",
+    role: "creator",
+  },
+  {
+    username: "client_saba",
+    name: "Saba Rahman",
+    accountStatus: "inactive",
+    email: "saba.client@example.com",
+    role: "client",
+  },
+];
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const res = await fetch("/api/admin/users");
-        const data = await res.json();
-        setUsers(data);
-      } catch (error) {
-        console.error("Error fetching users:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUsers();
-  }, []);
+export default function UserTable() {
+  const handleAction = (action, user) => {
+    console.log(`Action: ${action} | User: ${user.username}`);
+  };
 
   return (
-    <div className="mt-6 text-white">
-      <div className="p-4">
-        <h2 className="text-xl font-semibold mb-4">All Users</h2>
-        {loading ? (
-          <p>Loading users...</p>
-        ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>ID</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Role</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {users.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell>{user.id}</TableCell>
-                  <TableCell>{user.name}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>{user.role}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        )}
-      </div>
+    <div className="w-full h-full p-4 flex items-center justify-center">
+      <Table className="card">
+        <TableHeader>
+          <TableRow>
+            <TableHead>Username</TableHead>
+            <TableHead>Name</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Email</TableHead>
+            <TableHead>Role</TableHead>
+            <TableHead>Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {userData.map((user) => (
+            <TableRow key={user.username}>
+              <TableCell>{user.username}</TableCell>
+              <TableCell>{user.name}</TableCell>
+              <TableCell>{user.accountStatus}</TableCell>
+              <TableCell>{user.email}</TableCell>
+              <TableCell>{user.role}</TableCell>
+              <TableCell className="space-x-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => handleAction("viewProfile", user)}
+                >
+                  View
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => handleAction("editProfile", user)}
+                >
+                  Edit
+                </Button>
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  onClick={() => handleAction("deleteProfile", user)}
+                >
+                  Delete
+                </Button>
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  onClick={() => handleAction("changeRole", user)}
+                >
+                  Change Role
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </div>
   );
 }

@@ -16,13 +16,12 @@ export async function POST(req, { params }) {
 
   const session = await auth();
 
+  let fileUrl;
   try {
     const formData = await req.formData();
     const file = formData.get("file");
-
-    if (!file) {
-      return sendErrorResponse("No file uploaded", 400);
-    }
+    const displayName = formData.get("displayName");
+    const bio = formData.get("bio");
 
     if (session.user.id !== userId) {
       return sendErrorResponse("Unauthorized access", 401);
@@ -34,22 +33,32 @@ export async function POST(req, { params }) {
       return sendErrorResponse("User not found", 404);
     }
 
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
+    if (file) {
+      const bytes = await file.arrayBuffer();
+      const buffer = Buffer.from(bytes);
 
-    const filename = `${Date.now()}-${file.name}`;
-    const filePath = path.join(
-      process.cwd(),
-      "public/storage/users/images/profile-picture",
-      filename
-    );
+      const filename = `${Date.now()}-${file.name}`;
+      const filePath = path.join(
+        process.cwd(),
+        "public/storage/users/images/profile-picture",
+        filename
+      );
 
-    await writeFile(filePath, buffer);
+      await writeFile(filePath, buffer);
 
-    const fileUrl = `/storage/users/images/profile-picture/${filename}`;
+      fileUrl = `/storage/users/images/profile-picture/${filename}`;
+    }
 
     // Update profile picture
-    user.profilePicture = fileUrl;
+    if (fileUrl) {
+      user.profilePicture = fileUrl;
+    }
+
+    if (bio) {
+      user.bio = bio;
+    }
+
+    user.displayName = displayName;
     user.role = "user";
     await user.save();
 

@@ -134,6 +134,8 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         token._id = user._id?.toString();
         token.isVerified = user.isVerified;
         token.username = user.username;
+        token.firstname = user.firstname;
+        token.lastname = user.lastname;
         token.role = user.role;
         token.profilePicture = user.profilePicture;
       }
@@ -151,6 +153,8 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       if (token) {
         session.user.id = token._id;
         session.user.username = token.username;
+        session.user.firstname = token.firstname;
+        session.user.lastname = token.username;
         session.user.isVerified = token.isVerified;
         session.user.role = token.role;
         session.user.profilePicture = token.profilePicture;

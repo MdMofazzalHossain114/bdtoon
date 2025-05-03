@@ -5,6 +5,7 @@ import {
   MessageSquareWarning,
   SquareKanban,
   StickyNote,
+  UserCheck2,
   UserCog,
 } from "lucide-react";
 import Link from "next/link";
@@ -25,7 +26,7 @@ const IconButton = ({ children, className, ...rest }) => {
 
 const LeftSidebar = () => {
   return (
-    <div className="w-full max-w-[350px] flex flex-col gap-y-4 bg-gray-900">
+    <div className="h-full w-full flex flex-col gap-y-4 bg-card border-r border-muted-foreground/20">
       <div className="p-4 flex items-end justify-center">
         <H1>BDTOON</H1>
         <H3>/Admin Panel</H3>
@@ -42,6 +43,10 @@ const LeftSidebar = () => {
         <IconButton href="/admin/manage-posts">
           <StickyNote />
           <p className="text-lg font-semibold">Manage Posts</p>
+        </IconButton>
+        <IconButton href="/admin/approve-account">
+          <UserCheck2 />
+          <p className="text-lg font-semibold">Account Approval</p>
         </IconButton>
         <IconButton href="/admin/resolve-ticket">
           <MessageSquareWarning />
