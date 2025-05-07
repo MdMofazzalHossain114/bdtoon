@@ -116,7 +116,7 @@ export default function SignUpPage() {
   };
   return (
     <div className="flex min-h-screen bg-background flex-row-reverse">
-      {loading && <FullScreenLoading label="Authenticating..." />}
+      {loading && <FullScreenLoading label="Authenticating.." />}
       {/* Left Section */}
       <div className="relative hidden w-1/2 p-8 lg:block">
         <div className="h-full w-full overflow-hidden rounded-[40px] bg-gradient-to-b from-emerald-500 via-green-800 to-black">
